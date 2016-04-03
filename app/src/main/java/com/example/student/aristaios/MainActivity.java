@@ -10,6 +10,7 @@ import android.view.MenuInflater;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -49,7 +50,19 @@ public class MainActivity extends AppCompatActivity {
         switch(item.getItemId())
         {
             case R.id.action_settings:
-                Intent intent = new Intent(this, SettingsActivity.class);
+
+                if(SettingsActivity.class == null)
+                {
+                    
+                    Toast toast = Toast.makeText(getApplicationContext(), "its null", Toast.LENGTH_SHORT);
+                    toast.show();
+                }
+                else
+                {
+                    Toast toast = Toast.makeText(getApplicationContext(), "NOT NULL!", Toast.LENGTH_SHORT);
+                    toast.show();
+                }
+                Intent intent = new Intent(this, ThresholdActivity.class);
                 startActivity(intent);
                 return true;
             case R.id.action_connect:
