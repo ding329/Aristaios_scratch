@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="horizontal"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingBottom="@dimen/activity_vertical_margin"
@@ -13,24 +13,102 @@
     tools:context="com.example.student.aristaios.ThresholdActivity"
     tools:showIn="@layout/activity_threshold">
 
-    <TextView
-        android:id="@+id/title_maxt"
+    <!-- section below is what happens when you forget you are in realitive and not linear layout -->
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Max Temp:" />
-    <EditText
-        android:id="@+id/text_maxt"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp"
+        android:orientation="horizontal" >
+            <TextView
+                android:id="@+id/title_maxt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Max Temperature:" />
+            <EditText
+                android:id="@+id/text_maxt"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:layout_alignParentTop="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@id/title_maxt"
+                android:inputType="number" />
+            <CheckBox
+                android:id="@+id/checkbox_maxt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@id/text_maxt"
+                android:text="@string/title_checkbox" />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
+        android:orientation="horizontal" >
+            <TextView
+                android:id="@+id/title_mint"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Min Temperature:"/>
+            <EditText
+                android:id="@+id/text_mint"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:layout_toRightOf="@id/title_mint"
+                android:inputType="number" />
+            <CheckBox
+                android:id="@+id/checkbox_mint"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@id/text_mint"
+                android:text="@string/title_checkbox" />
+    </LinearLayout>
+    <LinearLayout
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/title_maxt"
-        android:inputType="number" />
-    <CheckBox
-        android:id="@+id/checkbox_maxt"
+        android:layout_height="wrap_content">
+        android:layout_alignParentTop="true"
+        android:orientation="horizontal" >
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Max Humidity:"/>
+        <EditText
+            android:id="@+id/text_maxh"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:inputType="number" />
+        <CheckBox
+            android:id="@+id/checkbox_maxh"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/text_maxh"
+            android:text="@string/title_checkbox" />
+    </LinearLayout>
+    <LinearLayout
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/text_maxt"
-        android:text="@string/title_checkbox" />
-</RelativeLayout>
+        android:layout_height="wrap_content">
+        android:layout_alignParentTop="true"
+        android:orientation="horizontal" >
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Min Humidity:"/>
+        <EditText
+            android:id="@+id/text_minh"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:inputType="number" />
+        <CheckBox
+            android:id="@+id/checkbox_minh"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/text_minh"
+            android:text="@string/title_checkbox" />
+    </LinearLayout>
+
+</LinearLayout>
