@@ -1,7 +1,7 @@
 package com.example.student.aristaios;
 
-import android.content.Intent;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -11,8 +11,13 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
+import android.content.*;
 
-public class MainActivity extends AppCompatActivity {
+import com.mbientlab.metawear.MetaWearBleService;
+
+public class MainActivity extends AppCompatActivity implements ServiceConnection {
+  //  private MetaWearBoard mwBoard = null;
+    private MetaWearBleService.LocalBinder serviceBinder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,6 +34,18 @@ public class MainActivity extends AppCompatActivity {
                         .setAction("Action", null).show();
             }
         });
+
+        // Bind the service when the activity is created
+        getApplicationContext().bindService(new Intent(this, MetaWearBleService.class),
+                this, Context.BIND_AUTO_CREATE);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        // Unbind the service when the activity is destroyed
+        getApplicationContext().unbindService(this);
     }
 
     @Override
@@ -37,9 +54,19 @@ public class MainActivity extends AppCompatActivity {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_main, menu);
 
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+     //   getMenuInflater().inflate(R.menu.menu_main, menu);
         return super.onCreateOptionsMenu(menu);
     }
+
+    @Override
+    public void onServiceConnected(ComponentName name, IBinder service) {
+        // Typecast the binder to the service's LocalBinder class
+        serviceBinder = (MetaWearBleService.LocalBinder) service;
+    }
+
+    @Override
+    public void onServiceDisconnected(ComponentName componentName) { }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -66,6 +93,7 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
                 return true;
             case R.id.action_connect:
+
                 return true;
             case R.id.action_disconnect:
                 return true;

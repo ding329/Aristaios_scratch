@@ -4,15 +4,15 @@
     tools:context="com.example.student.aristaios.MainActivity">
     <item
         android:id="@+id/action_settings"
-        android:title="Settings-1"
+        android:title="Settings"
         app:showAsAction="never" />
     <item
         android:id="@+id/action_connect"
-        android:title="Connect-2"
+        android:title="Connect"
         app:showAsAction="never" />
     <item
         android:id="@+id/action_disconnect"
-        android:title="Disconnect-3"
+        android:title="Disconnect"
         app:showAsAction="never" />
 </menu>
 
