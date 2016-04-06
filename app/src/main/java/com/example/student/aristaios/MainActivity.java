@@ -1,11 +1,14 @@
 package com.example.student.aristaios;
 
+import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.Menu;
@@ -14,15 +17,24 @@ import android.widget.Toast;
 import android.content.*;
 
 import com.mbientlab.metawear.MetaWearBleService;
+import com.mbientlab.metawear.MetaWearBoard;
+
 
 public class MainActivity extends AppCompatActivity implements ServiceConnection {
-  //  private MetaWearBoard mwBoard = null;
+    private MetaWearBoard mwBoard = null;
+    private final String MW_MAC_ADDRESS= "D4:C6:12:E8:8A:12";
     private MetaWearBleService.LocalBinder serviceBinder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        getApplicationContext().bindService(new Intent(this, MetaWearBleService.class),
+                this, Context.BIND_AUTO_CREATE);
+
+//        retrieveBoard();
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -36,9 +48,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         });
 
         // Bind the service when the activity is created
-        getApplicationContext().bindService(new Intent(this, MetaWearBleService.class),
-                this, Context.BIND_AUTO_CREATE);
-    }
+            }
 
     @Override
     public void onDestroy() {
@@ -77,30 +87,18 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         switch(item.getItemId())
         {
             case R.id.action_settings:
-
-                if(SettingsActivity.class == null)
-                {
-                    
-                    Toast toast = Toast.makeText(getApplicationContext(), "its null", Toast.LENGTH_SHORT);
-                    toast.show();
-                }
-                else
-                {
-                    Toast toast = Toast.makeText(getApplicationContext(), "NOT NULL!", Toast.LENGTH_SHORT);
-                    toast.show();
-                }
                 Intent intent = new Intent(this, ThresholdActivity.class);
                 startActivity(intent);
                 return true;
             case R.id.action_connect:
-
+                connectBoard();
                 return true;
             case R.id.action_disconnect:
                 return true;
         }
 
 /*        int id = item.getItemId();
-
+mport static com.mbientlab.metawear.MetaWearBoard.ConnectionStateHandler;
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
@@ -108,5 +106,40 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
 */
         return super.onOptionsItemSelected(item);
 
+    }
+
+    public void retrieveBoard() {
+        final BluetoothManager btManager=
+                (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
+        final BluetoothDevice remoteDevice=
+                btManager.getAdapter().getRemoteDevice(MW_MAC_ADDRESS);
+
+        // Create a MetaWear board object for the Bluetooth Device
+        mwBoard=  serviceBinder.getMetaWearBoard(remoteDevice);
+    }
+
+    private final MetaWearBoard.ConnectionStateHandler stateHandler= new MetaWearBoard.ConnectionStateHandler() {
+        @Override
+        public void connected() {
+            Log.i("MainActivity", "Connected");
+        }
+
+        @Override
+        public void disconnected() {
+            Log.i("MainActivity", "Connected Lost");
+        }
+
+        @Override
+        public void failure(int status, Throwable error) {
+            Log.e("MainActivity", "Error connecting", error);
+        }
+    };
+
+    public void connectBoard() {
+        
+        retrieveBoard();
+        Log.e("MainActivity", stateHandler.toString());
+        mwBoard.setConnectionStateHandler(stateHandler);
+        mwBoard.connect();
     }
 }
