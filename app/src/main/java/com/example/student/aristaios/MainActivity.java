@@ -19,12 +19,15 @@ import android.content.*;
 import com.mbientlab.metawear.MetaWearBleService;
 import com.mbientlab.metawear.MetaWearBoard;
 
+import org.w3c.dom.Text;
+
 
 public class MainActivity extends AppCompatActivity implements ServiceConnection {
     private MetaWearBoard mwBoard = null;
     private final String MW_MAC_ADDRESS= "D4:C6:12:E8:8A:12";
     private MetaWearBleService.LocalBinder serviceBinder;
-
+    private Context baseContext = null;
+    private CharSequence inputString = "";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,7 +35,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
 
         getApplicationContext().bindService(new Intent(this, MetaWearBleService.class),
                 this, Context.BIND_AUTO_CREATE);
-
+        baseContext = getApplicationContext();
 //        retrieveBoard();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -94,6 +97,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                 connectBoard();
                 return true;
             case R.id.action_disconnect:
+                disconnectBoard();
                 return true;
         }
 
@@ -120,13 +124,21 @@ mport static com.mbientlab.metawear.MetaWearBoard.ConnectionStateHandler;
 
     private final MetaWearBoard.ConnectionStateHandler stateHandler= new MetaWearBoard.ConnectionStateHandler() {
         @Override
-        public void connected() {
+        public void connected()
+        {
             Log.i("MainActivity", "Connected");
+          //  Toast toast = Toast.makeText(baseContext, "Metawear connected", Toast.LENGTH_SHORT);
+           // toast.show();
+            inputString = "Metawear connected";
         }
 
         @Override
-        public void disconnected() {
+        public void disconnected()
+        {
             Log.i("MainActivity", "Connected Lost");
+           // Toast toast = Toast.makeText(baseContext, "Metawear Dis-connected", Toast.LENGTH_SHORT);
+           // toast.show();
+            inputString = "Metawear Disconnected";
         }
 
         @Override
@@ -136,10 +148,34 @@ mport static com.mbientlab.metawear.MetaWearBoard.ConnectionStateHandler;
     };
 
     public void connectBoard() {
+     //if already connected, disconnect and reconnect
+        if (mwBoard == null)
+        {
+            retrieveBoard();
+            //      Log.e("MainActivity", stateHandler.toString());
+            mwBoard.setConnectionStateHandler(stateHandler);
+            mwBoard.connect();
+        }
+        else
+        {
+            inputString = "Metawear Already connected";
+        }
+            Toast toast = Toast.makeText(getApplicationContext(), inputString, Toast.LENGTH_SHORT);
+            toast.show();
+
+    }
+    public void disconnectBoard()
+    {
+        if(mwBoard !=null)
+        {
+            mwBoard.disconnect();
+            mwBoard=null;
+        }
+        else {
+            inputString = "Metawear device was not connected";
+        }
+            Toast toast = Toast.makeText(getApplicationContext(), inputString, Toast.LENGTH_SHORT);
+            toast.show();
         
-        retrieveBoard();
-        Log.e("MainActivity", stateHandler.toString());
-        mwBoard.setConnectionStateHandler(stateHandler);
-        mwBoard.connect();
     }
 }
