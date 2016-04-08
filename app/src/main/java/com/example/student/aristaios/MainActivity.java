@@ -16,18 +16,28 @@ import android.view.MenuItem;
 import android.widget.Toast;
 import android.content.*;
 
+import com.mbientlab.metawear.AsyncOperation;
 import com.mbientlab.metawear.MetaWearBleService;
 import com.mbientlab.metawear.MetaWearBoard;
+import com.mbientlab.metawear.RouteManager;
+import com.mbientlab.metawear.UnsupportedModuleException;
+import com.mbientlab.metawear.module.MultiChannelTemperature;
+import com.mbientlab.metawear.module.Timer;
 
 import org.w3c.dom.Text;
+
+import java.util.List;
 
 
 public class MainActivity extends AppCompatActivity implements ServiceConnection {
     private MetaWearBoard mwBoard = null;
     private final String MW_MAC_ADDRESS= "D4:C6:12:E8:8A:12";
     private MetaWearBleService.LocalBinder serviceBinder;
-    private Context baseContext = null;
+//    private Context baseContext = null;
     private CharSequence inputString = "";
+    MultiChannelTemperature mcTempModule;
+    private final int TIME_DELAY_PERIOD = 60000;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,8 +45,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
 
         getApplicationContext().bindService(new Intent(this, MetaWearBleService.class),
                 this, Context.BIND_AUTO_CREATE);
-        baseContext = getApplicationContext();
-//        retrieveBoard();
+  //      baseContext = getApplicationContext();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -155,6 +164,7 @@ mport static com.mbientlab.metawear.MetaWearBoard.ConnectionStateHandler;
             //      Log.e("MainActivity", stateHandler.toString());
             mwBoard.setConnectionStateHandler(stateHandler);
             mwBoard.connect();
+            getTemp();
         }
         else
         {
@@ -176,6 +186,61 @@ mport static com.mbientlab.metawear.MetaWearBoard.ConnectionStateHandler;
         }
             Toast toast = Toast.makeText(getApplicationContext(), inputString, Toast.LENGTH_SHORT);
             toast.show();
-        
     }
+    /*
+    code taken from mbientlab-project TemperatureTrackerAndroid - temperatureTracker
+     */
+    public void getTemp()
+    {
+        try{
+            mcTempModule= mwBoard.getModule(MultiChannelTemperature.class);
+        } catch (UnsupportedModuleException e)
+        {
+            Log.e("Thermistor Fragment", e.toString());
+          //  return false;
+        }
+
+        List<MultiChannelTemperature.Source> tempSources= mcTempModule.getSources();
+        MultiChannelTemperature.Source tempSource = tempSources.get(MultiChannelTemperature.MetaWearRChannel.NRF_DIE);
+  //      mcTempModule.routeData().fromSource(tempSource).log("log_stream").commit().onComplete(temperatureHandler);
+        //from the docs and not the mbientlab git
+        mcTempModule.routeData().fromSource(tempSource).log("log_stream").commit().onComplete(new AsyncOperation.CompletionHandler<RouteManager>() {
+            @Override
+            public void success(RouteManager result) {
+                //super.success(result);
+        /*        public void process(){
+                //does not like msg because it was not defined.  Tried to add Message msg as variable within process, like they did in other examples, but still did not work0
+                    Log.i("MainActivity", String.format("Ext thermistor: %.3fC", msg.getData(Float.class)));
+                }
+        */
+            }
+        });
+        mcTempModule.readTemperature(tempSources.get(MultiChannelTemperature.MetaWearRChannel.NRF_DIE), false);
+
+    }
+    /*
+       code taken from mbientlab-project TemperatureTrackerAndroid - temperatureTracker
+     */
+ /*   private final AsyncOperation.CompletionHandler<RouteManager> temperatureHandler = new AsyncOperation.CompletionHandler<RouteManager>()
+        @Override
+        public void success(RouteManager result){
+            try{
+                AsyncOperation<Timer.Controller> taskResult = mwBoard.getModule(Timer.class).scheduleTask(new Timer.Task() {
+                    @Override
+                    public void commands(){
+                        mcTempModule.readTemperature(mcTempModule.getSources().get(MultiChannelTemperature.MetaWearRChannel.NRF_DIE));
+                    }
+                }, TIME_DELAY_PERIOD, false);
+              taskResult.onComplete(new AsyncOperation.CompletionHandler<Timer.Controller>(){
+                    @Override
+                    public void success(Timer.Controller result){
+                        result.start();
+                    }
+
+              });
+            }catch (UnsupportedModuleException e){
+                Log.e("Temperature Fragment", e.toString());
+            }
+        }
+   */
 }
