@@ -195,23 +195,32 @@ mport static com.mbientlab.metawear.MetaWearBoard.ConnectionStateHandler;
 
     public void getTemp()
     {
-        try{
+       try{
+           /*
+           if the section below is not in try block, I receive an unsupported exception.
+            when it is in the try block, mcTempModule is null and will triggle a null exception on the List<> below
+            */
             mcTempModule = mwBoard.getModule(MultiChannelTemperature.class);
         } catch (UnsupportedModuleException e){
-            Log.e("Stupid asign TempModule", e.toString());
+            Log.e("Stupid = TempModule -1", e.toString());
+            Log.i("MainActivity", String.format("2nd attempt at try alert -1"));
+            return;
+        }
+        if(mcTempModule == null)
+        {
+            Log.e("MyActivity", String.format("Stupid null TempModule -2"));
             return;
         }
 
-       List<MultiChannelTemperature.Source> tempSources = mcTempModule.getSources();
+       java.util.List<MultiChannelTemperature.Source> tempSources = mcTempModule.getSources();
 
         if(tempSources == null)
         {
-            Log.e("MyActivity", String.format("Stupid null source"));
+            Log.e("MyActivity", String.format("Stupid null source -3"));
             return;
         }
 
-        ExtThermistor extTherm= (ExtThermistor)
-                tempSources.get(MetaWearRChannel.EXT_THERMISTOR);
+        ExtThermistor extTherm= (ExtThermistor) tempSources.get(MetaWearRChannel.EXT_THERMISTOR);
         extTherm.configure((byte) 0, (byte) 1, false);
 
        // mcTempModule.readTemperature(tempSources.get(MetaWearRChannel.EXT_THERMISTOR), false);
