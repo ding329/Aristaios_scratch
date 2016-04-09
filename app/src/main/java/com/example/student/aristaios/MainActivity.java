@@ -192,13 +192,23 @@ mport static com.mbientlab.metawear.MetaWearBoard.ConnectionStateHandler;
             Toast toast = Toast.makeText(getApplicationContext(), inputString, Toast.LENGTH_SHORT);
             toast.show();
     }
-    /*
-    code taken from mbientlab-project TemperatureTrackerAndroid - temperatureTracker
-     */
+
     public void getTemp()
     {
-       mcTempModule = mwBoard.getModule(MultiChannelTemperature.class);
-       List<Source> tempSources = mcTempModule.getSources();
+        try{
+            mcTempModule = mwBoard.getModule(MultiChannelTemperature.class);
+        } catch (UnsupportedModuleException e){
+            Log.e("Stupid asign TempModule", e.toString());
+            return;
+        }
+
+       List<MultiChannelTemperature.Source> tempSources = mcTempModule.getSources();
+
+        if(tempSources == null)
+        {
+            Log.e("MyActivity", String.format("Stupid null source"));
+            return;
+        }
 
         ExtThermistor extTherm= (ExtThermistor)
                 tempSources.get(MetaWearRChannel.EXT_THERMISTOR);
@@ -216,7 +226,7 @@ mport static com.mbientlab.metawear.MetaWearBoard.ConnectionStateHandler;
                         Log.i("MainActivity", String.format("Ext thermistor: %.3fC", message.getData(Float.class)));
                     }
                 });
-                mcTempModule.readTemperature(tempSources.get(MultiChannelTemperature.MetaWearRChannel.NRF_DIE), false);
+           //     mcTempModule.readTemperature(tempSources.get(MultiChannelTemperature.MetaWearRChannel.NRF_DIE), false);
             }
         });
 
