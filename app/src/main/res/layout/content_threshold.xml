@@ -111,4 +111,44 @@
             android:text="@string/title_checkbox" />
     </LinearLayout>
 
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:paddingTop="16dp"
+        android:orientation="vertical">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sensor location"
+        />
+        <RadioGroup
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <RadioButton
+                android:id="@+id/radioWine"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/radio_wine"
+                android:onClick="onRadioButtonClicked"
+            />
+            <RadioButton
+                android:id="@+id/radioCheese"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/radio_cheese"
+                android:onClick="onRadioButtonClicked"
+            />
+            <RadioButton
+                android:id="@+id/radioKitchen"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/radio_kitchen"
+                android:onClick="onRadioButtonClicked"
+            />
+        </RadioGroup>
+    </LinearLayout>
+
 </LinearLayout>

@@ -24,6 +24,7 @@ import com.mbientlab.metawear.RouteManager;
 import com.mbientlab.metawear.UnsupportedModuleException;
 import com.mbientlab.metawear.module.MultiChannelTemperature;
 import com.mbientlab.metawear.module.MultiChannelTemperature.*;
+//import com.mbientlab.metawear.module.Bme280Humidity;
 
 import com.mbientlab.metawear.module.Timer;
 
@@ -81,7 +82,6 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_main, menu);
 
-     //   getMenuInflater().inflate(R.menu.menu_main, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -115,13 +115,6 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                 return true;
         }
 
-/*        int id = item.getItemId();
-mport static com.mbientlab.metawear.MetaWearBoard.ConnectionStateHandler;
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-*/
         return super.onOptionsItemSelected(item);
 
     }
@@ -212,7 +205,7 @@ mport static com.mbientlab.metawear.MetaWearBoard.ConnectionStateHandler;
             return;
         }
 
-       java.util.List<MultiChannelTemperature.Source> tempSources = mcTempModule.getSources();
+       List<MultiChannelTemperature.Source> tempSources = mcTempModule.getSources();
 
         if(tempSources == null)
         {
@@ -235,10 +228,31 @@ mport static com.mbientlab.metawear.MetaWearBoard.ConnectionStateHandler;
                         Log.i("MainActivity", String.format("Ext thermistor: %.3fC", message.getData(Float.class)));
                     }
                 });
-           //     mcTempModule.readTemperature(tempSources.get(MultiChannelTemperature.MetaWearRChannel.NRF_DIE), false);
+                //     mcTempModule.readTemperature(tempSources.get(MultiChannelTemperature.MetaWearRChannel.NRF_DIE), false);
             }
         });
 
     }
-
+/*
+    public void getHumidity()
+    {
+        final Bme280Humidity humidityModule= mwBoard.getModule(Bme280Humidity.class);
+        humidityModule.routeData().fromSensor(false).stream("humidity").commit().onComplete(new AsyncOperation.CompletionHandler<RouteManager>()
+        {
+            @Override
+                public void success(RouteManager result)
+                {
+                    result.subscribe("humidity", new RouteManager.MessageHandler()
+                    {
+                        @Override
+                            public void process(Message msg)
+                            {
+                                Log.i("MainActivity", "Humidity percent: " + msg.getData(Float.class));
+                            }
+                    });
+                    humidityModule.readHumidity(false);
+                }
+        });
+    }
+*/
 }

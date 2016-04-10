@@ -5,7 +5,9 @@
     <string name="action_disconnect">Disconnect from Sensor</string>
     <string name="title_activity_settings">Settings</string>
     <string name="title_checkbox">Notify</string>
-
+    <string name="radio_wine">Wine Celler</string>
+    <string name="radio_cheese">Cheese Cave</string>
+    <string name="radio_kitchen">Kitchen</string>
     <!-- Strings related to Settings -->
 
     <!-- Example General settings -->
