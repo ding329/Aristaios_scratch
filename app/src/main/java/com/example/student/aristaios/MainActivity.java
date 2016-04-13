@@ -44,6 +44,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
     private MultiChannelTemperature mcTempModule;
     private final int TIME_DELAY_PERIOD = 60000;
     private Bme280Humidity humidityModule = null;
+    float temp=0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -135,9 +136,12 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         public void connected()
         {
             Log.i("MainActivity", "Connected");
+            getTemp();
+            getHumidity();
+            toastTemp();
           //  Toast toast = Toast.makeText(baseContext, "Metawear connected", Toast.LENGTH_SHORT);
            // toast.show();
-            inputString = "Metawear connected";
+//            inputString = "Metawear connected";
         }
 
         @Override
@@ -146,7 +150,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
             Log.i("MainActivity", "Connected Lost");
            // Toast toast = Toast.makeText(baseContext, "Metawear Dis-connected", Toast.LENGTH_SHORT);
            // toast.show();
-            inputString = "Metawear Disconnected";
+//            inputString = "Metawear Disconnected";
         }
 
         @Override
@@ -163,15 +167,17 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
             //      Log.e("MainActivity", stateHandler.toString());
             mwBoard.setConnectionStateHandler(stateHandler);
             mwBoard.connect();
-            getTemp();
+         //   getTemp();
+         //   getHumidity();
+         //   toastTemp();
         }
-        else
+ /*       else
         {
             inputString = "Metawear Already connected";
         }
             Toast toast = Toast.makeText(getApplicationContext(), inputString, Toast.LENGTH_SHORT);
             toast.show();
-
+*/
     }
     public void disconnectBoard()
     {
@@ -180,11 +186,12 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
             mwBoard.disconnect();
             mwBoard=null;
         }
-        else {
+  /*      else {
             inputString = "Metawear device was not connected";
         }
             Toast toast = Toast.makeText(getApplicationContext(), inputString, Toast.LENGTH_SHORT);
             toast.show();
+   */
     }
 
     public void getTemp()
@@ -223,6 +230,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                     @Override
                     public void process(Message message) {
                         Log.i("MainActivity", String.format("Ext thermistor: %.3fC", message.getData(Float.class)));
+                        temp = message.getData(Float.class);
                     }
                 });
                 mcTempModule.readTemperature(tempSources.get(MultiChannelTemperature.MetaWearRChannel.NRF_DIE));
@@ -230,10 +238,25 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         });
 
     }
-/*
+    public void toastTemp()
+    {
+        Log.i("MainActivity", String.format("Did we capture it right?::%.3fc::", temp));
+    }
+
     public void getHumidity()
     {
-        humidityModule= mwBoard.getModule(Bme280Humidity.class);
+        try{
+            humidityModule= mwBoard.getModule(Bme280Humidity.class);
+        } catch (UnsupportedModuleException e){
+            Log.e("Stupid = HumMod -1", e.toString());
+            Log.i("MainActivity", String.format("2nd attempt at humidity alert -1"));
+            return;
+        }
+        if(humidityModule == null)
+        {
+            Log.e("MyActivity", String.format("Stupid null Humidity Module -2"));
+            return;
+        }
         humidityModule.routeData().fromSensor(false).stream("humidity").commit().onComplete(new AsyncOperation.CompletionHandler<RouteManager>()
         {
             @Override
@@ -251,5 +274,5 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                 }
         });
     }
-*/
+
 }
