@@ -24,7 +24,7 @@ import com.mbientlab.metawear.RouteManager;
 import com.mbientlab.metawear.UnsupportedModuleException;
 import com.mbientlab.metawear.module.MultiChannelTemperature;
 import com.mbientlab.metawear.module.MultiChannelTemperature.*;
-//import com.mbientlab.metawear.module.Bme280Humidity;
+import com.mbientlab.metawear.module.Bme280Humidity;
 
 import com.mbientlab.metawear.module.Timer;
 
@@ -43,6 +43,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
     private CharSequence inputString = "";
     private MultiChannelTemperature mcTempModule;
     private final int TIME_DELAY_PERIOD = 60000;
+    private Bme280Humidity humidityModule = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -189,10 +190,6 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
     public void getTemp()
     {
        try{
-           /*
-           if the section below is not in try block, I receive an unsupported exception.
-            when it is in the try block, mcTempModule is null and will triggle a null exception on the List<> below
-            */
             mcTempModule = mwBoard.getModule(MultiChannelTemperature.class);
         } catch (UnsupportedModuleException e){
             Log.e("Stupid = TempModule -1", e.toString());
@@ -205,7 +202,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
             return;
         }
 
-       List<MultiChannelTemperature.Source> tempSources = mcTempModule.getSources();
+       final List<MultiChannelTemperature.Source> tempSources = mcTempModule.getSources();
 
         if(tempSources == null)
         {
@@ -213,11 +210,11 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
             return;
         }
 
-        ExtThermistor extTherm= (ExtThermistor) tempSources.get(MetaWearRChannel.EXT_THERMISTOR);
+/*        ExtThermistor extTherm= (ExtThermistor) tempSources.get(MetaWearRChannel.EXT_THERMISTOR);
         extTherm.configure((byte) 0, (byte) 1, false);
 
-       // mcTempModule.readTemperature(tempSources.get(MetaWearRChannel.EXT_THERMISTOR), false);
-
+        mcTempModule.readTemperature(tempSources.get(MetaWearRChannel.EXT_THERMISTOR), false);
+*/
    // guess my board does not support nrf soc temperature sensor or I dont understand the error
         mcTempModule.routeData().fromSource(tempSources.get(MultiChannelTemperature.MetaWearRChannel.NRF_DIE)).stream("temp_nrf_stream").commit().onComplete(new AsyncOperation.CompletionHandler<RouteManager>() {
             @Override
@@ -228,7 +225,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                         Log.i("MainActivity", String.format("Ext thermistor: %.3fC", message.getData(Float.class)));
                     }
                 });
-                //     mcTempModule.readTemperature(tempSources.get(MultiChannelTemperature.MetaWearRChannel.NRF_DIE), false);
+                mcTempModule.readTemperature(tempSources.get(MultiChannelTemperature.MetaWearRChannel.NRF_DIE));
             }
         });
 
@@ -236,7 +233,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
 /*
     public void getHumidity()
     {
-        final Bme280Humidity humidityModule= mwBoard.getModule(Bme280Humidity.class);
+        humidityModule= mwBoard.getModule(Bme280Humidity.class);
         humidityModule.routeData().fromSensor(false).stream("humidity").commit().onComplete(new AsyncOperation.CompletionHandler<RouteManager>()
         {
             @Override
