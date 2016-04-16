@@ -1,5 +1,6 @@
 package com.example.student.aristaios;
 
+import android.app.AlertDialog;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
 import android.os.Bundle;
@@ -13,6 +14,7 @@ import android.view.MenuInflater;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.CheckBox;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.content.*;
@@ -53,18 +55,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
     float humidity =0;
     String tempStr;
     String humidityStr;
-/*
-    private Handler handler = new Handler()
-    {
- //       @Override
-        public void handleMessage(Message message)
-        {
-            TextView tempView = (TextView) findViewById(R.id.title_temp);
-            tempStr = Float.toString(temp);
-            tempView.setText(tempStr + "C");
-        }
-    };
-*/
+
     private final RouteManager.MessageHandler loggingMessageHandler = new RouteManager.MessageHandler()
     {
         @Override
@@ -82,12 +73,35 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                     tempView.setText(tempVar + "C");
                 }
             });
-       //     TextView tempView = (TextView) findViewById(R.id.title_temp);
-         //   tempView.setText(message.getData(Float.class).intValue() + "C");
+
+            if( ((CheckBox) findViewById(R.id.checkbox_maxt)).isChecked() )
+            {
+                TextView tempView = (TextView) findViewById(R.id.text_maxt);
+                final int maxT = Integer.parseInt(tempView.getText().toString());
+                if(tempVar > maxT)
+                {
+                    new AlertDialog.Builder(MainActivity.this)
+                            .setTitle("Temp out of Range")
+                            .setMessage("The Sensor temp excceds Max Threshold")
+                            .setPositiveButton(android.R.string.yes,new DialogInterface.OnClickListener()
+                            {
+                                public void onClick(DialogInterface dialog, int which)
+                                {
+                                    dialog.cancel();
+                                }
+                            })
+                            .setIcon(android.R.drawable.ic_dialog_alert).show();
+                }
+            }
+            if( ((CheckBox) findViewById(R.id.checkbox_mint)).isChecked() )
+            {
+
+            }
+
         }
     };
 /*
-Code below was derived from temperatureTracker.java file from mbientlab labs git hub repository for TemperatureTrackerAndroid application
+Code below was 90% derived from temperatureTracker.java file from mbientlab labs git hub repository for TemperatureTrackerAndroid application
  */
     private final AsyncOperation.CompletionHandler<RouteManager> temperatureHandler = new AsyncOperation.CompletionHandler<RouteManager>()
     {
@@ -128,7 +142,7 @@ Code below was derived from temperatureTracker.java file from mbientlab labs git
             Log.e("AsyncResult", "Error in CompletionHandler", error);
         }
     };
-    
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -311,16 +325,11 @@ Code below was derived from temperatureTracker.java file from mbientlab labs git
                 });
                 mcTempModule.readTemperature(tempSources.get(MultiChannelTemperature.MetaWearRChannel.NRF_DIE));
              //   handler.sendEmptyMessage(0);
-
-
             }
         });
   */
 
     }
-
-
-
 
     public void getHumidity()
     {
