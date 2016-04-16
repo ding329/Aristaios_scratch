@@ -13,7 +13,17 @@
     tools:showIn="@layout/activity_main">
 
     <TextView
+        android:id="@+id/title_temp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!" />
+        android:text="@string/temp_string"
+    />
+ <!--
+    <TextView
+        android:id="@+id/title_humidity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/humidity_string"
+    />
+-->
 </RelativeLayout>

@@ -13,8 +13,10 @@ import android.view.MenuInflater;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.content.*;
+//import android.os.Message;
 
 import com.mbientlab.metawear.AsyncOperation;
 import com.mbientlab.metawear.Message;
@@ -31,6 +33,9 @@ import com.mbientlab.metawear.module.Timer;
 import org.w3c.dom.Text;
 
 import java.util.List;
+import java.util.TimerTask;
+//import java.util.Timer;
+import android.os.Handler;
 
 import javax.xml.transform.Source;
 
@@ -45,6 +50,85 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
     private final int TIME_DELAY_PERIOD = 60000;
     private Bme280Humidity humidityModule = null;
     float temp=0;
+    float humidity =0;
+    String tempStr;
+    String humidityStr;
+/*
+    private Handler handler = new Handler()
+    {
+ //       @Override
+        public void handleMessage(Message message)
+        {
+            TextView tempView = (TextView) findViewById(R.id.title_temp);
+            tempStr = Float.toString(temp);
+            tempView.setText(tempStr + "C");
+        }
+    };
+*/
+    private final RouteManager.MessageHandler loggingMessageHandler = new RouteManager.MessageHandler()
+    {
+        @Override
+        public void process(Message message)
+        {
+            Log.i("MainActivity", String.format("Inside the message handler!!!"));
+            Log.i("MainActivity", String.format("Ext thermistor: %.3fC", message.getData(Float.class)));
+            final float tempVar = message.getData(Float.class).intValue();
+            runOnUiThread(new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    TextView tempView = (TextView) findViewById(R.id.title_temp);
+                    tempView.setText(tempVar + "C");
+                }
+            });
+       //     TextView tempView = (TextView) findViewById(R.id.title_temp);
+         //   tempView.setText(message.getData(Float.class).intValue() + "C");
+        }
+    };
+/*
+Code below was derived from temperatureTracker.java file from mbientlab labs git hub repository for TemperatureTrackerAndroid application
+ */
+    private final AsyncOperation.CompletionHandler<RouteManager> temperatureHandler = new AsyncOperation.CompletionHandler<RouteManager>()
+    {
+       @Override
+        public void success(RouteManager result)
+       {
+          // result.setLogMessageHandler("mystream", loggingMessageHandler);
+           result.subscribe("temp_nrf_stream", loggingMessageHandler);
+           Log.e("MyActivity", String.format("AsyncOperation :: success "));
+           try
+           {
+               AsyncOperation<Timer.Controller> taskResult = mwBoard.getModule(Timer.class).scheduleTask(new Timer.Task()
+               {
+                   @Override
+                    public void commands()
+                   {
+                       Log.e("MyActivity", String.format("AsyncOperation::commands"));
+                       mcTempModule.readTemperature(mcTempModule.getSources().get(MultiChannelTemperature.MetaWearRChannel.NRF_DIE));
+                   }
+               }, TIME_DELAY_PERIOD, false);
+               taskResult.onComplete(new AsyncOperation.CompletionHandler<Timer.Controller>()
+               {
+                   @Override
+                    public void success(Timer.Controller result)
+                   {
+                       Log.e("MyActivity", String.format("taskResult :: success"));
+                       result.start();
+                   }
+               });
+           } catch (UnsupportedModuleException e)
+           {
+               Log.e("Temperature Fragment", e.toString());
+           }
+       }
+        @Override
+        public void failure(Throwable error)
+        {
+            Log.e("AsyncResult", "Error in CompletionHandler", error);
+        }
+    };
+    
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,7 +141,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
+/*
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -66,7 +150,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                         .setAction("Action", null).show();
             }
         });
-
+*/
         // Bind the service when the activity is created
             }
 
@@ -89,7 +173,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
 
     @Override
     public void onServiceConnected(ComponentName name, IBinder service) {
-        // Typecast the binder to the service's LocalBinder class
+        // Typecast the binder to the serString.format("Did we capture it right?::%.3fc::", temp));vice's LocalBinder class
         serviceBinder = (MetaWearBleService.LocalBinder) service;
     }
 
@@ -138,7 +222,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
             Log.i("MainActivity", "Connected");
             getTemp();
             getHumidity();
-            toastTemp();
+         //   toastTemp();
           //  Toast toast = Toast.makeText(baseContext, "Metawear connected", Toast.LENGTH_SHORT);
            // toast.show();
 //            inputString = "Metawear connected";
@@ -171,13 +255,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
          //   getHumidity();
          //   toastTemp();
         }
- /*       else
-        {
-            inputString = "Metawear Already connected";
-        }
-            Toast toast = Toast.makeText(getApplicationContext(), inputString, Toast.LENGTH_SHORT);
-            toast.show();
-*/
+
     }
     public void disconnectBoard()
     {
@@ -186,12 +264,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
             mwBoard.disconnect();
             mwBoard=null;
         }
-  /*      else {
-            inputString = "Metawear device was not connected";
-        }
-            Toast toast = Toast.makeText(getApplicationContext(), inputString, Toast.LENGTH_SHORT);
-            toast.show();
-   */
+
     }
 
     public void getTemp()
@@ -210,38 +283,44 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         }
 
        final List<MultiChannelTemperature.Source> tempSources = mcTempModule.getSources();
-
+   // test
+        MultiChannelTemperature.Source tempSource = tempSources.get(MultiChannelTemperature.MetaWearRChannel.NRF_DIE);
+        Log.e("MyActivity", String.format("Before the mcTempModule.routeData"));
+        mcTempModule.routeData().fromSource(tempSource).stream("temp_nrf_stream").commit().onComplete(temperatureHandler);  //log("log_stream").commit().onComplete(temperatureHandler);
+   // end of test
         if(tempSources == null)
         {
             Log.e("MyActivity", String.format("Stupid null source -3"));
             return;
         }
 
-/*        ExtThermistor extTherm= (ExtThermistor) tempSources.get(MetaWearRChannel.EXT_THERMISTOR);
-        extTherm.configure((byte) 0, (byte) 1, false);
-
-        mcTempModule.readTemperature(tempSources.get(MetaWearRChannel.EXT_THERMISTOR), false);
-*/
-   // guess my board does not support nrf soc temperature sensor or I dont understand the error
-        mcTempModule.routeData().fromSource(tempSources.get(MultiChannelTemperature.MetaWearRChannel.NRF_DIE)).stream("temp_nrf_stream").commit().onComplete(new AsyncOperation.CompletionHandler<RouteManager>() {
+   // create handler function to do update and then call it in here
+  /*      mcTempModule.routeData().fromSource(tempSources.get(MultiChannelTemperature.MetaWearRChannel.NRF_DIE)).stream("temp_nrf_stream").commit().onComplete(new AsyncOperation.CompletionHandler<RouteManager>() {
             @Override
-            public void success(RouteManager result) {
+            public void success(RouteManager result)
+            {
                 result.subscribe("temp_nrf_stream", new RouteManager.MessageHandler() {
                     @Override
                     public void process(Message message) {
                         Log.i("MainActivity", String.format("Ext thermistor: %.3fC", message.getData(Float.class)));
                         temp = message.getData(Float.class);
+                        //             tempStr = getString(R.string.temp_string);
+                        //                       Log.i("MainActivity", tempStr);
+
                     }
                 });
                 mcTempModule.readTemperature(tempSources.get(MultiChannelTemperature.MetaWearRChannel.NRF_DIE));
+             //   handler.sendEmptyMessage(0);
+
+
             }
         });
+  */
 
     }
-    public void toastTemp()
-    {
-        Log.i("MainActivity", String.format("Did we capture it right?::%.3fc::", temp));
-    }
+
+
+
 
     public void getHumidity()
     {
@@ -268,6 +347,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                             public void process(Message msg)
                             {
                                 Log.i("MainActivity", "Humidity percent: " + msg.getData(Float.class));
+                                humidity = msg.getData(Float.class);
                             }
                     });
                     humidityModule.readHumidity(false);

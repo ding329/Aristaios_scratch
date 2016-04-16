@@ -8,6 +8,8 @@
     <string name="radio_wine">Wine Celler</string>
     <string name="radio_cheese">Cheese Cave</string>
     <string name="radio_kitchen">Kitchen</string>
+    <string name="temp_string">Undefined</string>
+    <string name="humidity_string">Undefined</string>
     <!-- Strings related to Settings -->
 
     <!-- Example General settings -->
