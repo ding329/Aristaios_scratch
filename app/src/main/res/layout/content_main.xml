@@ -11,19 +11,24 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="com.example.student.aristaios.MainActivity"
     tools:showIn="@layout/activity_main">
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
 
-    <TextView
-        android:id="@+id/title_temp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/temp_string"
-    />
- <!--
-    <TextView
-        android:id="@+id/title_humidity"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/humidity_string"
-    />
--->
+        <TextView
+            android:id="@+id/title_temp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/temp_string"
+        />
+
+        <TextView
+            android:id="@+id/title_humidity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/humidity_string"
+        />
+    </LinearLayout>
+
 </RelativeLayout>

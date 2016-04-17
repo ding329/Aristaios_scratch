@@ -39,21 +39,19 @@ public class ThresholdActivity extends AppCompatActivity {
         });
  */
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        if(savedInstanceState != null)
+/*        if(savedInstanceState != null)
         {
             Log.i("ThresholdActivity", String.format("saved Instancestate not null"));
             TextView tempView = (TextView) findViewById(R.id.text_maxt);
             tempView.setText(savedInstanceState.getInt(MAX_TEMP));
         }
+*/
     }
     //the values in the instance are destroyed on the back button.  Thi is our attempt to resolve it
+    /*
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState)
     {
-        /*
-      TextView tempView = (TextView) findViewById(R.id.text_maxt);
-                final int maxT = Integer.parseInt(tempView.getText().toString());
-         */
         TextView tempView = (TextView) findViewById(R.id.text_maxt);
         final int maxT = Integer.parseInt(tempView.getText().toString());
         Log.i("ThresholdActivity", String.format("MaxT :: %d", maxT));
@@ -119,7 +117,7 @@ public class ThresholdActivity extends AppCompatActivity {
         tempView.setText(savedInstanceState.getInt(MAX_TEMP));
         Log.i("ThresholdActivity", String.format("::%s::", tempView.getText() ));
     }
-
+*/
     public void onRadioButtonClicked(View view)
     {
         boolean checked = ((RadioButton) view).isChecked();

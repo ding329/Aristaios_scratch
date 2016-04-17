@@ -63,7 +63,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         {
             Log.i("MainActivity", String.format("Inside the message handler!!!"));
             Log.i("MainActivity", String.format("Ext thermistor: %.3fC", message.getData(Float.class)));
-            final float tempVar = message.getData(Float.class).intValue();
+            final float tempVar = message.getData(Float.class);  //.intValue();
             runOnUiThread(new Runnable()
             {
                 @Override
@@ -74,7 +74,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                 }
             });
 
-            if( ((CheckBox) findViewById(R.id.checkbox_maxt)).isChecked() )
+ /*           if( ((CheckBox) findViewById(R.id.checkbox_maxt)).isChecked() )
             {
                 TextView tempView = (TextView) findViewById(R.id.text_maxt);
                 final int maxT = Integer.parseInt(tempView.getText().toString());
@@ -97,9 +97,18 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
             {
 
             }
-
+           */
         }
     };
+    private final RouteManager.MessageHandler humidityMessageHandler = new RouteManager.MessageHandler()
+    {
+        @Override
+        public void process(Message message) {
+            Log.i("MainActivity", String.format("humidity message hanndler "));
+            Log.i("MainActivity", "Humidity percent: " + message.getData(Float.class));
+        }
+    };
+
 /*
 Code below was 90% derived from temperatureTracker.java file from mbientlab labs git hub repository for TemperatureTrackerAndroid application
  */
@@ -110,7 +119,7 @@ Code below was 90% derived from temperatureTracker.java file from mbientlab labs
        {
           // result.setLogMessageHandler("mystream", loggingMessageHandler);
            result.subscribe("temp_nrf_stream", loggingMessageHandler);
-           Log.e("MyActivity", String.format("AsyncOperation :: success "));
+           Log.e("MyActivity", String.format("AsyncOperation temperature :: success "));
            try
            {
                AsyncOperation<Timer.Controller> taskResult = mwBoard.getModule(Timer.class).scheduleTask(new Timer.Task()
@@ -142,7 +151,45 @@ Code below was 90% derived from temperatureTracker.java file from mbientlab labs
             Log.e("AsyncResult", "Error in CompletionHandler", error);
         }
     };
+//humidityHandler
+    private final AsyncOperation.CompletionHandler<RouteManager> humidityHandler = new AsyncOperation.CompletionHandler<RouteManager>()
+    {
+        @Override
+        public void success(RouteManager result)
+        {
+            Log.e("MyActivity", String.format("AsyncOperation humidity :: success "));
+            result.subscribe("humidity", humidityMessageHandler);
+            try
+            {
+                AsyncOperation<Timer.Controller> taskResult = mwBoard.getModule(Timer.class).scheduleTask(new Timer.Task()
+                {
+                    @Override
+                    public void commands() {
+                        Log.e("MyActivity", String.format("AsyncOperation humidity ::commands"));
+                        humidityModule.readHumidity(false);
+                    }
+                }, TIME_DELAY_PERIOD, false);
+                taskResult.onComplete(new AsyncOperation.CompletionHandler<Timer.Controller>()
+                {
+                    @Override
+                    public void success(Timer.Controller result)
+                    {
+                        Log.e("MyActivity", String.format("taskResult humidity:: success"));
+                        result.start();
+                    }
+                });
+            } catch (UnsupportedModuleException e)
+            {
+                Log.e("humidity Fragment", e.toString());
+            }
 
+        }
+        @Override
+        public void failure(Throwable error)
+        {
+            Log.e("AsyncResult", "Error in CompletionHandler", error);
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -155,16 +202,7 @@ Code below was 90% derived from temperatureTracker.java file from mbientlab labs
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-/*
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-*/
+
         // Bind the service when the activity is created
             }
 
@@ -236,19 +274,12 @@ Code below was 90% derived from temperatureTracker.java file from mbientlab labs
             Log.i("MainActivity", "Connected");
             getTemp();
             getHumidity();
-         //   toastTemp();
-          //  Toast toast = Toast.makeText(baseContext, "Metawear connected", Toast.LENGTH_SHORT);
-           // toast.show();
-//            inputString = "Metawear connected";
         }
 
         @Override
         public void disconnected()
         {
             Log.i("MainActivity", "Connected Lost");
-           // Toast toast = Toast.makeText(baseContext, "Metawear Dis-connected", Toast.LENGTH_SHORT);
-           // toast.show();
-//            inputString = "Metawear Disconnected";
         }
 
         @Override
@@ -256,7 +287,11 @@ Code below was 90% derived from temperatureTracker.java file from mbientlab labs
             Log.e("MainActivity", "Error connecting", error);
         }
     };
-
+        /*
+        Could not call the other functions that should take palce after connected due to threads and race conditions.  Had to move to metawear connected
+        function above.  Also caused issue with Toast statements in the functions above
+         */
+    //http://mbientlab.com/androidddocs/latest
     public void connectBoard() {
      //if already connected, disconnect and reconnect
         if (mwBoard == null)
@@ -265,12 +300,10 @@ Code below was 90% derived from temperatureTracker.java file from mbientlab labs
             //      Log.e("MainActivity", stateHandler.toString());
             mwBoard.setConnectionStateHandler(stateHandler);
             mwBoard.connect();
-         //   getTemp();
-         //   getHumidity();
-         //   toastTemp();
-        }
+         }
 
     }
+    //http://mbientlab.com/androidddocs/latest
     public void disconnectBoard()
     {
         if(mwBoard !=null)
@@ -290,6 +323,7 @@ Code below was 90% derived from temperatureTracker.java file from mbientlab labs
             Log.i("MainActivity", String.format("2nd attempt at try alert -1"));
             return;
         }
+
         if(mcTempModule == null)
         {
             Log.e("MyActivity", String.format("Stupid null TempModule -2"));
@@ -308,7 +342,7 @@ Code below was 90% derived from temperatureTracker.java file from mbientlab labs
             return;
         }
 
-   // create handler function to do update and then call it in here
+   // create handler function to do update and then call it in here.  Single call instance
   /*      mcTempModule.routeData().fromSource(tempSources.get(MultiChannelTemperature.MetaWearRChannel.NRF_DIE)).stream("temp_nrf_stream").commit().onComplete(new AsyncOperation.CompletionHandler<RouteManager>() {
             @Override
             public void success(RouteManager result)
@@ -345,7 +379,10 @@ Code below was 90% derived from temperatureTracker.java file from mbientlab labs
             Log.e("MyActivity", String.format("Stupid null Humidity Module -2"));
             return;
         }
-        humidityModule.routeData().fromSensor(false).stream("humidity").commit().onComplete(new AsyncOperation.CompletionHandler<RouteManager>()
+
+        humidityModule.routeData().fromSensor(false).stream("humidity").commit().onComplete(humidityHandler);
+        //single call instance
+  /*      humidityModule.routeData().fromSensor(false).stream("humidity").commit().onComplete(new AsyncOperation.CompletionHandler<RouteManager>()
         {
             @Override
                 public void success(RouteManager result)
@@ -362,6 +399,7 @@ Code below was 90% derived from temperatureTracker.java file from mbientlab labs
                     humidityModule.readHumidity(false);
                 }
         });
+     */
     }
 
 }
