@@ -67,11 +67,9 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
             Log.i("MainActivity", String.format("Ext thermistor: %.3fC", message.getData(Float.class)));
             getHumidity();
             final float tempVar = message.getData(Float.class);  //.intValue();
-            runOnUiThread(new Runnable()
-            {
+            runOnUiThread(new Runnable() {
                 @Override
-                public void run()
-                {
+                public void run() {
                     TextView tempView = (TextView) findViewById(R.id.title_temp);
                     tempView.setText(tempVar + "C");
                     tempView = (TextView) findViewById(R.id.title_humidity);
@@ -284,6 +282,15 @@ Code below was 90% derived from temperatureTracker.java file from mbientlab labs
         public void connected()
         {
             Log.i("MainActivity", "Connected");
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    TextView tempView = (TextView) findViewById(R.id.title_temp);
+                    tempView.setText("Connecting");
+                    tempView = (TextView) findViewById(R.id.title_humidity);
+                    tempView.setText("Connecting");
+                }
+            });
             getTemp();
    //         getHumidity();
         }
@@ -292,7 +299,17 @@ Code below was 90% derived from temperatureTracker.java file from mbientlab labs
         public void disconnected()
         {
             Log.i("MainActivity", "Connected Lost");
-        }
+
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    TextView tempView = (TextView) findViewById(R.id.title_temp);
+                    tempView.setText("Disconnected");
+                    tempView = (TextView) findViewById(R.id.title_humidity);
+                    tempView.setText("Disconnected");
+                }
+            });
+        } //disconnected
 
         @Override
         public void failure(int status, Throwable error) {

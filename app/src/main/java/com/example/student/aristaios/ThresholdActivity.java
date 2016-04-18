@@ -1,5 +1,6 @@
 package com.example.student.aristaios;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -28,27 +29,18 @@ public class ThresholdActivity extends AppCompatActivity {
         setContentView(R.layout.activity_threshold);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-/*
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
- */
+
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-/*        if(savedInstanceState != null)
+        if(savedInstanceState != null)
         {
             Log.i("ThresholdActivity", String.format("saved Instancestate not null"));
             TextView tempView = (TextView) findViewById(R.id.text_maxt);
             tempView.setText(savedInstanceState.getInt(MAX_TEMP));
         }
-*/
+
     }
     //the values in the instance are destroyed on the back button.  Thi is our attempt to resolve it
-    /*
+
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState)
     {
@@ -117,7 +109,7 @@ public class ThresholdActivity extends AppCompatActivity {
         tempView.setText(savedInstanceState.getInt(MAX_TEMP));
         Log.i("ThresholdActivity", String.format("::%s::", tempView.getText() ));
     }
-*/
+
     public void onRadioButtonClicked(View view)
     {
         boolean checked = ((RadioButton) view).isChecked();
@@ -151,6 +143,12 @@ public class ThresholdActivity extends AppCompatActivity {
     public int getSensorLocation()
     {
         return sensorLocation;
+    }
+
+    public void backToMain(View view)
+    {
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
     }
 
 }

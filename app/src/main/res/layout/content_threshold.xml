@@ -149,6 +149,12 @@
                 android:onClick="onRadioButtonClicked"
             />
         </RadioGroup>
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Return to main"
+            android:onClick="backToMain"
+            />
     </LinearLayout>
 
 </LinearLayout>
