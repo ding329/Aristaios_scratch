@@ -45,6 +45,8 @@ import javax.xml.transform.Source;
 public class MainActivity extends AppCompatActivity implements ServiceConnection {
     private MetaWearBoard mwBoard = null;
     private final String MW_MAC_ADDRESS= "D4:C6:12:E8:8A:12";
+    private static final String TEMP_STREAM = "temp_nrf_stream";
+    private static final String HUMIDITY_STREAM ="humidity";
     private MetaWearBleService.LocalBinder serviceBinder;
 //    private Context baseContext = null;
     private CharSequence inputString = "";
@@ -63,6 +65,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         {
             Log.i("MainActivity", String.format("Inside the message handler!!!"));
             Log.i("MainActivity", String.format("Ext thermistor: %.3fC", message.getData(Float.class)));
+            getHumidity();
             final float tempVar = message.getData(Float.class);  //.intValue();
             runOnUiThread(new Runnable()
             {
@@ -71,6 +74,8 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                 {
                     TextView tempView = (TextView) findViewById(R.id.title_temp);
                     tempView.setText(tempVar + "C");
+                    tempView = (TextView) findViewById(R.id.title_humidity);
+                    tempView.setText(humidity + "%");
                 }
             });
 
@@ -100,6 +105,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
            */
         }
     };
+   /*
     private final RouteManager.MessageHandler humidityMessageHandler = new RouteManager.MessageHandler()
     {
         @Override
@@ -108,7 +114,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
             Log.i("MainActivity", "Humidity percent: " + message.getData(Float.class));
         }
     };
-
+*/
 /*
 Code below was 90% derived from temperatureTracker.java file from mbientlab labs git hub repository for TemperatureTrackerAndroid application
  */
@@ -118,7 +124,7 @@ Code below was 90% derived from temperatureTracker.java file from mbientlab labs
         public void success(RouteManager result)
        {
           // result.setLogMessageHandler("mystream", loggingMessageHandler);
-           result.subscribe("temp_nrf_stream", loggingMessageHandler);
+           result.subscribe(TEMP_STREAM, loggingMessageHandler);
            Log.e("MyActivity", String.format("AsyncOperation temperature :: success "));
            try
            {
@@ -152,15 +158,17 @@ Code below was 90% derived from temperatureTracker.java file from mbientlab labs
         }
     };
 //humidityHandler
+    /*
     private final AsyncOperation.CompletionHandler<RouteManager> humidityHandler = new AsyncOperation.CompletionHandler<RouteManager>()
     {
         @Override
         public void success(RouteManager result)
         {
             Log.e("MyActivity", String.format("AsyncOperation humidity :: success "));
-            result.subscribe("humidity", humidityMessageHandler);
+            result.subscribe(HUMIDITY_STREAM, humidityMessageHandler);
             try
             {
+                Log.e("MyActivity", String.format("inside the try "));
                 AsyncOperation<Timer.Controller> taskResult = mwBoard.getModule(Timer.class).scheduleTask(new Timer.Task()
                 {
                     @Override
@@ -169,6 +177,10 @@ Code below was 90% derived from temperatureTracker.java file from mbientlab labs
                         humidityModule.readHumidity(false);
                     }
                 }, TIME_DELAY_PERIOD, false);
+                if(taskResult == null)
+                {
+                    Log.e("MyActivity", String.format("taskResult in humidity is null"));
+                }
                 taskResult.onComplete(new AsyncOperation.CompletionHandler<Timer.Controller>()
                 {
                     @Override
@@ -190,7 +202,7 @@ Code below was 90% derived from temperatureTracker.java file from mbientlab labs
             Log.e("AsyncResult", "Error in CompletionHandler", error);
         }
     };
-
+*/
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -273,7 +285,7 @@ Code below was 90% derived from temperatureTracker.java file from mbientlab labs
         {
             Log.i("MainActivity", "Connected");
             getTemp();
-            getHumidity();
+   //         getHumidity();
         }
 
         @Override
@@ -380,9 +392,9 @@ Code below was 90% derived from temperatureTracker.java file from mbientlab labs
             return;
         }
 
-        humidityModule.routeData().fromSensor(false).stream("humidity").commit().onComplete(humidityHandler);
+  //      humidityModule.routeData().fromSensor(false).stream("humidity").commit().onComplete(humidityHandler);
         //single call instance
-  /*      humidityModule.routeData().fromSensor(false).stream("humidity").commit().onComplete(new AsyncOperation.CompletionHandler<RouteManager>()
+     humidityModule.routeData().fromSensor(false).stream("humidity").commit().onComplete(new AsyncOperation.CompletionHandler<RouteManager>()
         {
             @Override
                 public void success(RouteManager result)
@@ -399,7 +411,7 @@ Code below was 90% derived from temperatureTracker.java file from mbientlab labs
                     humidityModule.readHumidity(false);
                 }
         });
-     */
+
     }
 
 }
