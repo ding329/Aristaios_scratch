@@ -64,7 +64,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_toRightOf="@id/text_mint"
-                android:text="@string/title_checkbox" />
+                android:text="@string/title_checkbox"/>
     </LinearLayout>
     <LinearLayout
         android:layout_width="wrap_content"
@@ -88,7 +88,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_toRightOf="@id/text_maxh"
-            android:text="@string/title_checkbox" />
+            android:text="@string/title_checkbox"/>
     </LinearLayout>
     <LinearLayout
         android:layout_width="wrap_content"
@@ -106,13 +106,13 @@
             android:paddingLeft="16dp"
             android:paddingRight="16dp"
             android:inputType="number"
-            android:onClick="setMinHumidityThresh"/>
+            android:onClick="setMaxHumidityThresh"/>
         <CheckBox
             android:id="@+id/checkbox_minh"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_toRightOf="@id/text_minh"
-            android:text="@string/title_checkbox" />
+            android:text="@string/title_checkbox"/>
     </LinearLayout>
 
     <LinearLayout

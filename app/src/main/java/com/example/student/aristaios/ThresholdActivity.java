@@ -23,7 +23,7 @@ public class ThresholdActivity extends AppCompatActivity {
     static final String BOOL_MAXT = "checkbox_maxt";
     static final String BOOL_MINT = "checkbox_mint";
     static final String BOOL_MAXH = "checkbox_maxH";
-    static final String BOOL_MINH = "checkbox_maxH";
+    static final String BOOL_MINH = "checkbox_minH";
     static final String MYPREF = "test";
     int maxTempThresh;
     int minTempThresh;
@@ -66,6 +66,23 @@ public class ThresholdActivity extends AppCompatActivity {
 
                     tempView = (TextView) findViewById(R.id.text_minh);
                     tempView.setText(Integer.toString(sharedPref.getInt(MIN_HUMIDITY, 0)));
+
+                    if(sharedPref.getInt(BOOL_MAXT,0) ==1) {
+                        CheckBox checkbox  =(CheckBox) findViewById(R.id.checkbox_maxt);
+                        checkbox.setChecked(true);
+                    }
+                    if(sharedPref.getInt(BOOL_MINT,0) ==1) {
+                        CheckBox checkbox  =(CheckBox) findViewById(R.id.checkbox_mint);
+                        checkbox.setChecked(true);
+                    }
+                    if(sharedPref.getInt(BOOL_MAXH,0) ==1) {
+                        CheckBox checkbox  =(CheckBox) findViewById(R.id.checkbox_maxh);
+                        checkbox.setChecked(true);
+                    }
+                    if(sharedPref.getInt(BOOL_MINH,0) ==1) {
+                        CheckBox checkbox  =(CheckBox) findViewById(R.id.checkbox_minh);
+                        checkbox.setChecked(true);
+                    }
                 }
             });
         }
@@ -115,7 +132,7 @@ public class ThresholdActivity extends AppCompatActivity {
         setMinTempThresh(findViewById(R.id.text_mint));
         setMaxHumidityThresh(findViewById(R.id.text_maxh));
         setMinHumidityThresh(findViewById(R.id.text_minh));
-
+        setCheckBoxThresh();
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
 
@@ -159,16 +176,56 @@ public class ThresholdActivity extends AppCompatActivity {
         editor.putInt(MAX_HUMIDITY, maxHumidityThresh);
         editor.commit();
     }
-    public void setMinHumidityThresh(View view)
-    {
+    public void setMinHumidityThresh(View view) {
         TextView tempView = (TextView) findViewById(R.id.text_minh);
-        if(tempView.getText().toString().isEmpty() || tempView.getText().toString()== null ) {
-            minHumidityThresh=0;
-        }
-        else {
-            minHumidityThresh= Integer.parseInt(tempView.getText().toString());
+        if (tempView.getText().toString().isEmpty() || tempView.getText().toString() == null) {
+            minHumidityThresh = 0;
+        } else {
+            minHumidityThresh = Integer.parseInt(tempView.getText().toString());
         }
         editor.putInt(MIN_HUMIDITY, minHumidityThresh);
         editor.commit();
+    }
+    public void setCheckBoxThresh()
+    {
+        CheckBox checkbox = (CheckBox) findViewById(R.id.checkbox_maxt);
+        if(checkbox.isChecked()) {
+            editor.putInt(BOOL_MAXT, 1);
+            editor.commit();
+        }
+        else {
+            editor.putInt(BOOL_MAXT, 0);
+            editor.commit();
+        }
+
+        checkbox = (CheckBox) findViewById(R.id.checkbox_mint);
+        if(checkbox.isChecked()) {
+            editor.putInt(BOOL_MINT, 1);
+            editor.commit();
+        }
+        else {
+            editor.putInt(BOOL_MINT, 0);
+            editor.commit();
+        }
+
+        checkbox = (CheckBox) findViewById(R.id.checkbox_maxh);
+        if(checkbox.isChecked()) {
+            editor.putInt(BOOL_MAXH, 1);
+            editor.commit();
+        }
+        else {
+            editor.putInt(BOOL_MAXH, 0);
+            editor.commit();
+        }
+
+        checkbox = (CheckBox) findViewById(R.id.checkbox_minh);
+        if(checkbox.isChecked()) {
+            editor.putInt(BOOL_MINH, 1);
+            editor.commit();
+        }
+        else {
+            editor.putInt(BOOL_MINH, 0);
+            editor.commit();
+        }
     }
 }
