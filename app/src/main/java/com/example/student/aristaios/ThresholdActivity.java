@@ -1,6 +1,8 @@
 package com.example.student.aristaios;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -22,7 +24,19 @@ public class ThresholdActivity extends AppCompatActivity {
     static final String BOOL_MINT = "checkbox_mint";
     static final String BOOL_MAXH = "checkbox_maxH";
     static final String BOOL_MINH = "checkbox_maxH";
+    static final String MYPREF = "test";
+    int maxTempThresh;
+    int minTempThresh;
+    int maxHumidityThresh;
+    int minHumidityThresh;
 
+/*    Context context = this;
+    SharedPreferences sharedPref = context.getSharedPreferences(MYPREF,Context.MODE_PRIVATE);
+    SharedPreferences.Editor editor = sharedPref.edit();
+*/
+    Context context;
+    SharedPreferences sharedPref;
+    SharedPreferences.Editor editor;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,85 +44,34 @@ public class ThresholdActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        context = this;
+        sharedPref = context.getSharedPreferences(MYPREF,Context.MODE_PRIVATE);
+        editor = sharedPref.edit();
+
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        if(savedInstanceState != null)
+        if(sharedPref.getAll().size() >0)
         {
-            Log.i("ThresholdActivity", String.format("saved Instancestate not null"));
-            TextView tempView = (TextView) findViewById(R.id.text_maxt);
-            tempView.setText(savedInstanceState.getInt(MAX_TEMP));
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Log.i("ThresholdActivity", String.format("saved Instancestate not null :: %d :: ", sharedPref.getInt(MAX_TEMP, 0)));
+                    TextView tempView = (TextView) findViewById(R.id.text_maxt);
+                    tempView.setText(Integer.toString(sharedPref.getInt(MAX_TEMP, 0)));
+
+                    tempView = (TextView) findViewById(R.id.text_mint);
+                    tempView.setText(Integer.toString(sharedPref.getInt(MIN_TEMP, 0)));
+
+                    tempView = (TextView) findViewById(R.id.text_maxh);
+                    tempView.setText(Integer.toString(sharedPref.getInt(MAX_HUMIDITY, 0)));
+
+                    tempView = (TextView) findViewById(R.id.text_minh);
+                    tempView.setText(Integer.toString(sharedPref.getInt(MIN_HUMIDITY, 0)));
+                }
+            });
         }
 
     }
     //the values in the instance are destroyed on the back button.  Thi is our attempt to resolve it
-
-    @Override
-    public void onSaveInstanceState(Bundle savedInstanceState)
-    {
-        TextView tempView = (TextView) findViewById(R.id.text_maxt);
-        final int maxT = Integer.parseInt(tempView.getText().toString());
-        Log.i("ThresholdActivity", String.format("MaxT :: %d", maxT));
-        savedInstanceState.putInt(MAX_TEMP, maxT);
-
-        tempView = (TextView) findViewById(R.id.text_mint);
-        final int minT = Integer.parseInt(tempView.getText().toString());
-        savedInstanceState.putInt(MIN_TEMP, minT);
-
-        tempView = (TextView) findViewById(R.id.text_maxh);
-        final int maxH = Integer.parseInt(tempView.getText().toString());
-        savedInstanceState.putInt(MAX_HUMIDITY, maxH);
-
-        tempView = (TextView) findViewById(R.id.text_minh);
-        final int minH = Integer.parseInt(tempView.getText().toString());
-        savedInstanceState.putInt(MIN_HUMIDITY, minH);
-
-        if( ((CheckBox) findViewById(R.id.checkbox_maxt)).isChecked() )
-        {
-            savedInstanceState.putBoolean(BOOL_MAXT, true);
-        }
-        else
-        {
-            savedInstanceState.putBoolean(BOOL_MAXT, false);
-        }
-
-        if( ((CheckBox) findViewById(R.id.checkbox_mint)).isChecked() )
-        {
-            savedInstanceState.putBoolean(BOOL_MINT, true);
-        }
-        else
-        {
-            savedInstanceState.putBoolean(BOOL_MINT, false);
-        }
-
-        if( ((CheckBox) findViewById(R.id.checkbox_maxh)).isChecked() )
-        {
-            savedInstanceState.putBoolean(BOOL_MAXH, true);
-        }
-        else
-        {
-            savedInstanceState.putBoolean(BOOL_MAXH, false);
-        }
-
-        if( ((CheckBox) findViewById(R.id.checkbox_minh)).isChecked() )
-        {
-            savedInstanceState.putBoolean(BOOL_MINH, true);
-        }
-        else
-        {
-            savedInstanceState.putBoolean(BOOL_MINH, false);
-        }
-
-        super.onSaveInstanceState(savedInstanceState);
-    }
-
-    public void onRestoreInstanceState(Bundle savedInstanceState)
-    {
-        Log.i("ThresholdActivity", String.format("OnRestoreIntanse State"));
-
-        super.onRestoreInstanceState(savedInstanceState);
-        TextView tempView = (TextView) findViewById(R.id.text_maxt);
-        tempView.setText(savedInstanceState.getInt(MAX_TEMP));
-        Log.i("ThresholdActivity", String.format("::%s::", tempView.getText() ));
-    }
 
     public void onRadioButtonClicked(View view)
     {
@@ -147,8 +110,65 @@ public class ThresholdActivity extends AppCompatActivity {
 
     public void backToMain(View view)
     {
+        //ensure the values are stored
+        setMaxTempThresh((findViewById(R.id.text_maxt)));
+        setMinTempThresh(findViewById(R.id.text_mint));
+        setMaxHumidityThresh(findViewById(R.id.text_maxh));
+        setMinHumidityThresh(findViewById(R.id.text_minh));
+
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
-    }
 
+    }
+//the onclick is triggeered when clicked.  Therefore, if you do not click again via "Next" or touch screen it will not capture the value
+    public void setMaxTempThresh(View view)
+    {
+        Log.i("ThresholdActivity", String.format("In the setMaxTempThresh"));
+        TextView tempView = (TextView) findViewById(R.id.text_maxt);
+        if(tempView.getText().toString().isEmpty() || tempView.getText().toString()== null ) {
+            maxTempThresh=0;
+        }
+        else {
+            maxTempThresh= Integer.parseInt(tempView.getText().toString());
+        }
+        editor.putInt(MAX_TEMP, maxTempThresh);
+        editor.commit();
+    }
+    public void setMinTempThresh(View view)
+    {
+        TextView tempView = (TextView) findViewById(R.id.text_mint);
+        if(tempView.getText().toString().isEmpty() || tempView.getText().toString()== null ) {
+            minTempThresh=0;
+        }
+        else {
+            minTempThresh= Integer.parseInt(tempView.getText().toString());
+        }
+
+        editor.putInt(MIN_TEMP, minTempThresh);
+        editor.commit();
+    }
+    public void setMaxHumidityThresh(View view)
+    {
+        TextView tempView = (TextView) findViewById(R.id.text_maxh);
+        if(tempView.getText().toString().isEmpty() || tempView.getText().toString()== null ) {
+            maxHumidityThresh=0;
+        }
+        else {
+            maxHumidityThresh= Integer.parseInt(tempView.getText().toString());
+        }
+        editor.putInt(MAX_HUMIDITY, maxHumidityThresh);
+        editor.commit();
+    }
+    public void setMinHumidityThresh(View view)
+    {
+        TextView tempView = (TextView) findViewById(R.id.text_minh);
+        if(tempView.getText().toString().isEmpty() || tempView.getText().toString()== null ) {
+            minHumidityThresh=0;
+        }
+        else {
+            minHumidityThresh= Integer.parseInt(tempView.getText().toString());
+        }
+        editor.putInt(MIN_HUMIDITY, minHumidityThresh);
+        editor.commit();
+    }
 }

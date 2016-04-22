@@ -31,7 +31,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_toRightOf="@id/title_maxt"
-                android:inputType="number" />
+                android:inputType="number"
+                android:onClick="setMaxTempThresh"/>
             <CheckBox
                 android:id="@+id/checkbox_maxt"
                 android:layout_width="wrap_content"
@@ -56,7 +57,8 @@
                 android:paddingLeft="16dp"
                 android:paddingRight="16dp"
                 android:layout_toRightOf="@id/title_mint"
-                android:inputType="number" />
+                android:inputType="number"
+                android:onClick="setMinTempThresh" />
             <CheckBox
                 android:id="@+id/checkbox_mint"
                 android:layout_width="wrap_content"
@@ -79,7 +81,8 @@
             android:layout_height="wrap_content"
             android:paddingLeft="16dp"
             android:paddingRight="16dp"
-            android:inputType="number" />
+            android:inputType="number"
+            android:onClick="setMaxHumidityThresh"/>
         <CheckBox
             android:id="@+id/checkbox_maxh"
             android:layout_width="wrap_content"
@@ -102,7 +105,8 @@
             android:layout_height="wrap_content"
             android:paddingLeft="16dp"
             android:paddingRight="16dp"
-            android:inputType="number" />
+            android:inputType="number"
+            android:onClick="setMinHumidityThresh"/>
         <CheckBox
             android:id="@+id/checkbox_minh"
             android:layout_width="wrap_content"

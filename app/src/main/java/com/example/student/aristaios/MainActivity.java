@@ -46,17 +46,15 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
     private MetaWearBoard mwBoard = null;
     private final String MW_MAC_ADDRESS= "D4:C6:12:E8:8A:12";
     private static final String TEMP_STREAM = "temp_nrf_stream";
-    private static final String HUMIDITY_STREAM ="humidity";
+  //  private static final String HUMIDITY_STREAM ="humidity";
     private MetaWearBleService.LocalBinder serviceBinder;
 //    private Context baseContext = null;
     private CharSequence inputString = "";
     private MultiChannelTemperature mcTempModule;
     private final int TIME_DELAY_PERIOD = 60000;
     private Bme280Humidity humidityModule = null;
-    float temp=0;
     float humidity =0;
-    String tempStr;
-    String humidityStr;
+
 
     private final RouteManager.MessageHandler loggingMessageHandler = new RouteManager.MessageHandler()
     {
@@ -155,52 +153,6 @@ Code below was 90% derived from temperatureTracker.java file from mbientlab labs
             Log.e("AsyncResult", "Error in CompletionHandler", error);
         }
     };
-//humidityHandler
-    /*
-    private final AsyncOperation.CompletionHandler<RouteManager> humidityHandler = new AsyncOperation.CompletionHandler<RouteManager>()
-    {
-        @Override
-        public void success(RouteManager result)
-        {
-            Log.e("MyActivity", String.format("AsyncOperation humidity :: success "));
-            result.subscribe(HUMIDITY_STREAM, humidityMessageHandler);
-            try
-            {
-                Log.e("MyActivity", String.format("inside the try "));
-                AsyncOperation<Timer.Controller> taskResult = mwBoard.getModule(Timer.class).scheduleTask(new Timer.Task()
-                {
-                    @Override
-                    public void commands() {
-                        Log.e("MyActivity", String.format("AsyncOperation humidity ::commands"));
-                        humidityModule.readHumidity(false);
-                    }
-                }, TIME_DELAY_PERIOD, false);
-                if(taskResult == null)
-                {
-                    Log.e("MyActivity", String.format("taskResult in humidity is null"));
-                }
-                taskResult.onComplete(new AsyncOperation.CompletionHandler<Timer.Controller>()
-                {
-                    @Override
-                    public void success(Timer.Controller result)
-                    {
-                        Log.e("MyActivity", String.format("taskResult humidity:: success"));
-                        result.start();
-                    }
-                });
-            } catch (UnsupportedModuleException e)
-            {
-                Log.e("humidity Fragment", e.toString());
-            }
-
-        }
-        @Override
-        public void failure(Throwable error)
-        {
-            Log.e("AsyncResult", "Error in CompletionHandler", error);
-        }
-    };
-*/
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -291,8 +243,9 @@ Code below was 90% derived from temperatureTracker.java file from mbientlab labs
                     tempView.setText("Connecting");
                 }
             });
+            getHumidity();
             getTemp();
-   //         getHumidity();
+
         }
 
         @Override
@@ -371,27 +324,6 @@ Code below was 90% derived from temperatureTracker.java file from mbientlab labs
             return;
         }
 
-   // create handler function to do update and then call it in here.  Single call instance
-  /*      mcTempModule.routeData().fromSource(tempSources.get(MultiChannelTemperature.MetaWearRChannel.NRF_DIE)).stream("temp_nrf_stream").commit().onComplete(new AsyncOperation.CompletionHandler<RouteManager>() {
-            @Override
-            public void success(RouteManager result)
-            {
-                result.subscribe("temp_nrf_stream", new RouteManager.MessageHandler() {
-                    @Override
-                    public void process(Message message) {
-                        Log.i("MainActivity", String.format("Ext thermistor: %.3fC", message.getData(Float.class)));
-                        temp = message.getData(Float.class);
-                        //             tempStr = getString(R.string.temp_string);
-                        //                       Log.i("MainActivity", tempStr);
-
-                    }
-                });
-                mcTempModule.readTemperature(tempSources.get(MultiChannelTemperature.MetaWearRChannel.NRF_DIE));
-             //   handler.sendEmptyMessage(0);
-            }
-        });
-  */
-
     }
 
     public void getHumidity()
@@ -409,7 +341,6 @@ Code below was 90% derived from temperatureTracker.java file from mbientlab labs
             return;
         }
 
-  //      humidityModule.routeData().fromSensor(false).stream("humidity").commit().onComplete(humidityHandler);
         //single call instance
      humidityModule.routeData().fromSensor(false).stream("humidity").commit().onComplete(new AsyncOperation.CompletionHandler<RouteManager>()
         {
