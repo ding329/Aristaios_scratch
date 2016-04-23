@@ -54,9 +54,17 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
     private final int TIME_DELAY_PERIOD = 60000;
     private Bme280Humidity humidityModule = null;
     float humidity =0;
+    static final String MAX_TEMP = "text_maxt";
+    static final String MIN_TEMP = "text_mint";
+    static final String MAX_HUMIDITY = "text_maxh";
+    static final String MIN_HUMIDITY = "text_minh";
+    static final String BOOL_MAXT = "checkbox_maxt";
+    static final String BOOL_MINT = "checkbox_mint";
+    static final String BOOL_MAXH = "checkbox_maxH";
+    static final String BOOL_MINH = "checkbox_minH";
 
-
-    private final RouteManager.MessageHandler loggingMessageHandler = new RouteManager.MessageHandler()
+//removed the final
+    private RouteManager.MessageHandler loggingMessageHandler = new RouteManager.MessageHandler()
     {
         @Override
         public void process(Message message)
@@ -70,12 +78,14 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                 public void run() {
                     TextView tempView = (TextView) findViewById(R.id.title_temp);
                     tempView.setText(tempVar + "C");
+                    checkTemp(tempVar);
                     tempView = (TextView) findViewById(R.id.title_humidity);
                     tempView.setText(humidity + "%");
                 }
             });
 
- /*           if( ((CheckBox) findViewById(R.id.checkbox_maxt)).isChecked() )
+
+    /*        if( ((CheckBox) findViewById(R.id.checkbox_maxt)).isChecked() )
             {
                 TextView tempView = (TextView) findViewById(R.id.text_maxt);
                 final int maxT = Integer.parseInt(tempView.getText().toString());
@@ -98,9 +108,52 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
             {
 
             }
-           */
+     */
         }
     };
+    public void checkTemp(float temp)
+    {
+        Log.i("MainActivity", String.format("inside checkTemp"));
+        if(ThresholdActivity.getThreshold(BOOL_MAXT)==1)
+        {
+            Log.i("MainActivity", String.format("Inside BOOL_MAXT"));  //::%d::%s::", ThresholdActivity.getThreshold(MAX_TEMP),Integer.parseInt(tempView.getText().toString() )));
+            if(ThresholdActivity.getThreshold(MAX_TEMP) < temp )
+            {
+                Log.i("MainActivity", String.format("alertbox attempt"));
+                new AlertDialog.Builder(MainActivity.this)
+                        .setTitle("Temp out of Range")
+                        .setMessage("The Sensor temp excceds Max Threshold")
+                        .setPositiveButton(android.R.string.yes,new DialogInterface.OnClickListener()
+                        {
+                            public void onClick(DialogInterface dialog, int which)
+                            {
+                                dialog.cancel();
+                            }
+                        })
+                        .setIcon(android.R.drawable.ic_dialog_alert).show();
+            }
+        }
+    /*
+        if(ThresholdActivity.getThreshold(BOOL_MINT)==1)
+        {
+            if(ThresholdActivity.getThreshold(MIN_TEMP) >  temp)
+            {
+                new AlertDialog.Builder(MainActivity.this)
+                    .setTitle("Temp out of Range")
+                    .setMessage("The Sensor temp excceds Min Threshold")
+                    .setPositiveButton(android.R.string.yes,new DialogInterface.OnClickListener()
+                    {
+                        public void onClick(DialogInterface dialog, int which)
+                        {
+                            dialog.cancel();
+                        }
+                    })
+                    .setIcon(android.R.drawable.ic_dialog_alert).show();
+            }
+
+        }
+*/
+    }
    /*
     private final RouteManager.MessageHandler humidityMessageHandler = new RouteManager.MessageHandler()
     {

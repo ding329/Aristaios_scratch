@@ -21,12 +21,6 @@ public class ThresholdActivity extends AppCompatActivity {
     static final String MAX_HUMIDITY = "text_maxh";
     static final String MIN_HUMIDITY = "text_minh";
     static final String BOOL_MAXT = "checkbox_maxt";
-    static final String BOOL_MINT = "checkbox_mint";
-    static final String BOOL_MAXH = "checkbox_maxH";
-    static final String BOOL_MINH = "checkbox_minH";
-    static final String MYPREF = "test";
-    int maxTempThresh;
-    int minTempThresh;
     int maxHumidityThresh;
     int minHumidityThresh;
 
@@ -35,7 +29,14 @@ public class ThresholdActivity extends AppCompatActivity {
     SharedPreferences.Editor editor = sharedPref.edit();
 */
     Context context;
-    SharedPreferences sharedPref;
+
+    static final String BOOL_MINT = "checkbox_mint";
+    static final String BOOL_MAXH = "checkbox_maxH";
+    static final String BOOL_MINH = "checkbox_minH";
+    static final String MYPREF = "test";
+    int maxTempThresh;
+    int minTempThresh;
+    static SharedPreferences sharedPref;  //The static might break everything but it made the errors go away
     SharedPreferences.Editor editor;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -227,5 +228,10 @@ public class ThresholdActivity extends AppCompatActivity {
             editor.putInt(BOOL_MINH, 0);
             editor.commit();
         }
+    }
+    public static int getThreshold(String input)
+    {
+        Log.i("ThresholdActivity", String.format("In getThreshold ::%s::%d::", input, sharedPref.getInt(input, 0)));
+        return sharedPref.getInt(input, 0);
     }
 }
