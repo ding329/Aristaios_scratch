@@ -195,7 +195,7 @@ public class ThresholdActivity extends AppCompatActivity {
             editor.commit();
         }
         else {
-            editor.putInt(BOOL_MAXT, 0);
+            editor.putInt(BOOL_MAXT, -1);
             editor.commit();
         }
 
@@ -205,7 +205,7 @@ public class ThresholdActivity extends AppCompatActivity {
             editor.commit();
         }
         else {
-            editor.putInt(BOOL_MINT, 0);
+            editor.putInt(BOOL_MINT, -1);  //0 is calling a null instance
             editor.commit();
         }
 
@@ -215,7 +215,7 @@ public class ThresholdActivity extends AppCompatActivity {
             editor.commit();
         }
         else {
-            editor.putInt(BOOL_MAXH, 0);
+            editor.putInt(BOOL_MAXH, -1);
             editor.commit();
         }
 
@@ -225,13 +225,13 @@ public class ThresholdActivity extends AppCompatActivity {
             editor.commit();
         }
         else {
-            editor.putInt(BOOL_MINH, 0);
+            editor.putInt(BOOL_MINH, -1);
             editor.commit();
         }
     }
     public static int getThreshold(String input)
     {
-        Log.i("ThresholdActivity", String.format("In getThreshold ::%s::%d::", input, sharedPref.getInt(input, 0)));
+        Log.i("ThresholdActivity", String.format("In getThreshold ::%s::", input));
         return sharedPref.getInt(input, 0);
     }
 }

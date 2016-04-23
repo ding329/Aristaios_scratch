@@ -69,7 +69,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         @Override
         public void process(Message message)
         {
-            Log.i("MainActivity", String.format("Inside the message handler!!!"));
+          //  Log.i("MainActivity", String.format("Inside the message handler!!!"));
             Log.i("MainActivity", String.format("Ext thermistor: %.3fC", message.getData(Float.class)));
             getHumidity();
             final float tempVar = message.getData(Float.class);  //.intValue();
@@ -79,36 +79,14 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                     TextView tempView = (TextView) findViewById(R.id.title_temp);
                     tempView.setText(tempVar + "C");
                     checkTemp(tempVar);
+                    checkHumidity();
                     tempView = (TextView) findViewById(R.id.title_humidity);
                     tempView.setText(humidity + "%");
                 }
             });
 
 
-    /*        if( ((CheckBox) findViewById(R.id.checkbox_maxt)).isChecked() )
-            {
-                TextView tempView = (TextView) findViewById(R.id.text_maxt);
-                final int maxT = Integer.parseInt(tempView.getText().toString());
-                if(tempVar > maxT)
-                {
-                    new AlertDialog.Builder(MainActivity.this)
-                            .setTitle("Temp out of Range")
-                            .setMessage("The Sensor temp excceds Max Threshold")
-                            .setPositiveButton(android.R.string.yes,new DialogInterface.OnClickListener()
-                            {
-                                public void onClick(DialogInterface dialog, int which)
-                                {
-                                    dialog.cancel();
-                                }
-                            })
-                            .setIcon(android.R.drawable.ic_dialog_alert).show();
-                }
-            }
-            if( ((CheckBox) findViewById(R.id.checkbox_mint)).isChecked() )
-            {
 
-            }
-     */
         }
     };
     public void checkTemp(float temp)
@@ -123,28 +101,25 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                 new AlertDialog.Builder(MainActivity.this)
                         .setTitle("Temp out of Range")
                         .setMessage("The Sensor temp excceds Max Threshold")
-                        .setPositiveButton(android.R.string.yes,new DialogInterface.OnClickListener()
-                        {
-                            public void onClick(DialogInterface dialog, int which)
-                            {
+                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
                                 dialog.cancel();
                             }
                         })
                         .setIcon(android.R.drawable.ic_dialog_alert).show();
             }
         }
-    /*
         if(ThresholdActivity.getThreshold(BOOL_MINT)==1)
         {
+            Log.i("MainActivity", String.format("Inside BOOL_MINT"));
             if(ThresholdActivity.getThreshold(MIN_TEMP) >  temp)
             {
+                Log.i("MainActivity", String.format("Inside MINT getThreshold"));
                 new AlertDialog.Builder(MainActivity.this)
                     .setTitle("Temp out of Range")
                     .setMessage("The Sensor temp excceds Min Threshold")
-                    .setPositiveButton(android.R.string.yes,new DialogInterface.OnClickListener()
-                    {
-                        public void onClick(DialogInterface dialog, int which)
-                        {
+                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
                             dialog.cancel();
                         }
                     })
@@ -152,7 +127,46 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
             }
 
         }
-*/
+    }
+    //do the temp
+    public void checkHumidity()
+    {
+        Log.i("MainActivity", String.format("inside checkhumidity"));
+        if(ThresholdActivity.getThreshold(BOOL_MAXH)==1)
+        {
+            Log.i("MainActivity", String.format("Inside BOOL_MAXH"));  //::%d::%s::", ThresholdActivity.getThreshold(MAX_TEMP),Integer.parseInt(tempView.getText().toString() )));
+            if(ThresholdActivity.getThreshold(MAX_HUMIDITY) < humidity )
+            {
+                Log.i("MainActivity", String.format("alertbox attempt"));
+                new AlertDialog.Builder(MainActivity.this)
+                        .setTitle("Humidity out of Range")
+                        .setMessage("The Sensor humidity excceds Max Threshold")
+                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.cancel();
+                            }
+                        })
+                        .setIcon(android.R.drawable.ic_dialog_alert).show();
+            }
+        }
+        if(ThresholdActivity.getThreshold(BOOL_MINH)==1)
+        {
+            Log.i("MainActivity", String.format("Inside BOOL_MINT"));
+            if(ThresholdActivity.getThreshold(MIN_HUMIDITY) >  humidity)
+            {
+                Log.i("MainActivity", String.format("Inside MINH getThreshold"));
+                new AlertDialog.Builder(MainActivity.this)
+                        .setTitle("Humidity out of Range")
+                        .setMessage("The Sensor humidity excceds Min Threshold")
+                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.cancel();
+                            }
+                        })
+                        .setIcon(android.R.drawable.ic_dialog_alert).show();
+            }
+
+        }
     }
    /*
     private final RouteManager.MessageHandler humidityMessageHandler = new RouteManager.MessageHandler()
