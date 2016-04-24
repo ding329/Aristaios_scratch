@@ -70,34 +70,39 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         public void process(Message message)
         {
           //  Log.i("MainActivity", String.format("Inside the message handler!!!"));
-            Log.i("MainActivity", String.format("Ext thermistor: %.3fC", message.getData(Float.class)));
-            getHumidity();
-            final float tempVar = message.getData(Float.class);  //.intValue();
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    TextView tempView = (TextView) findViewById(R.id.title_temp);
-                    tempView.setText(tempVar + "C");
-                    checkTemp(tempVar);
-                    checkHumidity();
-                    tempView = (TextView) findViewById(R.id.title_humidity);
-                    tempView.setText(humidity + "%");
-                }
-            });
 
-
+           Log.i("MainActivity", String.format("Ext thermistor: %.3fC", message.getData(Float.class)));
+            if(mwBoard != null) {
+                getHumidity();
+                final float tempVar = message.getData(Float.class);  //.intValue();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.i("MainActivity", String.format("Variables should change"));
+                        TextView tempView = (TextView) findViewById(R.id.title_temp);
+                        tempView.setText(tempVar + "C");
+                        checkTemp(tempVar);
+                        checkHumidity();
+                        tempView = (TextView) findViewById(R.id.title_humidity);
+                        tempView.setText(humidity + "%");
+                    }
+                });
+            }
+            else{
+                Log.i("MainActivity", String.format("mwBoard is null and process will work"));
+            }
 
         }
     };
     public void checkTemp(float temp)
     {
-        Log.i("MainActivity", String.format("inside checkTemp"));
+     //   Log.i("MainActivity", String.format("inside checkTemp"));
         if(ThresholdActivity.getThreshold(BOOL_MAXT)==1)
         {
-            Log.i("MainActivity", String.format("Inside BOOL_MAXT"));  //::%d::%s::", ThresholdActivity.getThreshold(MAX_TEMP),Integer.parseInt(tempView.getText().toString() )));
+       //     Log.i("MainActivity", String.format("Inside BOOL_MAXT"));  //::%d::%s::", ThresholdActivity.getThreshold(MAX_TEMP),Integer.parseInt(tempView.getText().toString() )));
             if(ThresholdActivity.getThreshold(MAX_TEMP) < temp )
             {
-                Log.i("MainActivity", String.format("alertbox attempt"));
+       //         Log.i("MainActivity", String.format("alertbox attempt"));
                 new AlertDialog.Builder(MainActivity.this)
                         .setTitle("Temp out of Range")
                         .setMessage("The Sensor temp excceds Max Threshold")
@@ -111,10 +116,10 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         }
         if(ThresholdActivity.getThreshold(BOOL_MINT)==1)
         {
-            Log.i("MainActivity", String.format("Inside BOOL_MINT"));
+         //   Log.i("MainActivity", String.format("Inside BOOL_MINT"));
             if(ThresholdActivity.getThreshold(MIN_TEMP) >  temp)
             {
-                Log.i("MainActivity", String.format("Inside MINT getThreshold"));
+          //      Log.i("MainActivity", String.format("Inside MINT getThreshold"));
                 new AlertDialog.Builder(MainActivity.this)
                     .setTitle("Temp out of Range")
                     .setMessage("The Sensor temp excceds Min Threshold")
@@ -125,19 +130,18 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                     })
                     .setIcon(android.R.drawable.ic_dialog_alert).show();
             }
-
         }
     }
     //do the temp
     public void checkHumidity()
     {
-        Log.i("MainActivity", String.format("inside checkhumidity"));
+   //     Log.i("MainActivity", String.format("inside checkhumidity"));
         if(ThresholdActivity.getThreshold(BOOL_MAXH)==1)
         {
-            Log.i("MainActivity", String.format("Inside BOOL_MAXH"));  //::%d::%s::", ThresholdActivity.getThreshold(MAX_TEMP),Integer.parseInt(tempView.getText().toString() )));
+     //       Log.i("MainActivity", String.format("Inside BOOL_MAXH"));  //::%d::%s::", ThresholdActivity.getThreshold(MAX_TEMP),Integer.parseInt(tempView.getText().toString() )));
             if(ThresholdActivity.getThreshold(MAX_HUMIDITY) < humidity )
             {
-                Log.i("MainActivity", String.format("alertbox attempt"));
+       //         Log.i("MainActivity", String.format("alertbox attempt"));
                 new AlertDialog.Builder(MainActivity.this)
                         .setTitle("Humidity out of Range")
                         .setMessage("The Sensor humidity excceds Max Threshold")
@@ -151,10 +155,10 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         }
         if(ThresholdActivity.getThreshold(BOOL_MINH)==1)
         {
-            Log.i("MainActivity", String.format("Inside BOOL_MINT"));
+       //     Log.i("MainActivity", String.format("Inside BOOL_MINT"));
             if(ThresholdActivity.getThreshold(MIN_HUMIDITY) >  humidity)
             {
-                Log.i("MainActivity", String.format("Inside MINH getThreshold"));
+         //       Log.i("MainActivity", String.format("Inside MINH getThreshold"));
                 new AlertDialog.Builder(MainActivity.this)
                         .setTitle("Humidity out of Range")
                         .setMessage("The Sensor humidity excceds Min Threshold")
@@ -168,16 +172,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
 
         }
     }
-   /*
-    private final RouteManager.MessageHandler humidityMessageHandler = new RouteManager.MessageHandler()
-    {
-        @Override
-        public void process(Message message) {
-            Log.i("MainActivity", String.format("humidity message hanndler "));
-            Log.i("MainActivity", "Humidity percent: " + message.getData(Float.class));
-        }
-    };
-*/
+
 /*
 Code below was 90% derived from temperatureTracker.java file from mbientlab labs git hub repository for TemperatureTrackerAndroid application
  */
@@ -188,7 +183,7 @@ Code below was 90% derived from temperatureTracker.java file from mbientlab labs
        {
           // result.setLogMessageHandler("mystream", loggingMessageHandler);
            result.subscribe(TEMP_STREAM, loggingMessageHandler);
-           Log.e("MyActivity", String.format("AsyncOperation temperature :: success "));
+      //     Log.e("MyActivity", String.format("AsyncOperation temperature :: success "));
            try
            {
                AsyncOperation<Timer.Controller> taskResult = mwBoard.getModule(Timer.class).scheduleTask(new Timer.Task()
@@ -225,15 +220,16 @@ Code below was 90% derived from temperatureTracker.java file from mbientlab labs
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //disconnectBoard();  //might help with coming back from settings
+
         getApplicationContext().bindService(new Intent(this, MetaWearBleService.class),
                 this, Context.BIND_AUTO_CREATE);
-  //      baseContext = getApplicationContext();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        // Bind the service when the activity is created
-            }
+
+    }
 
     @Override
     public void onDestroy() {
@@ -271,6 +267,7 @@ Code below was 90% derived from temperatureTracker.java file from mbientlab labs
         switch(item.getItemId())
         {
             case R.id.action_settings:
+          //      disconnectBoard();
                 Intent intent = new Intent(this, ThresholdActivity.class);
                 startActivity(intent);
                 return true;
@@ -319,7 +316,7 @@ Code below was 90% derived from temperatureTracker.java file from mbientlab labs
         public void disconnected()
         {
             Log.i("MainActivity", "Connected Lost");
-
+        //    humidity = -1;
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -382,7 +379,7 @@ Code below was 90% derived from temperatureTracker.java file from mbientlab labs
        final List<MultiChannelTemperature.Source> tempSources = mcTempModule.getSources();
    // test
         MultiChannelTemperature.Source tempSource = tempSources.get(MultiChannelTemperature.MetaWearRChannel.NRF_DIE);
-        Log.e("MyActivity", String.format("Before the mcTempModule.routeData"));
+    //    Log.e("MyActivity", String.format("Before the mcTempModule.routeData"));
         mcTempModule.routeData().fromSource(tempSource).stream("temp_nrf_stream").commit().onComplete(temperatureHandler);  //log("log_stream").commit().onComplete(temperatureHandler);
    // end of test
         if(tempSources == null)

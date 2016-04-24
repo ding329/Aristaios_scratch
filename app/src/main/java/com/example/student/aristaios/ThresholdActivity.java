@@ -49,13 +49,13 @@ public class ThresholdActivity extends AppCompatActivity {
         sharedPref = context.getSharedPreferences(MYPREF,Context.MODE_PRIVATE);
         editor = sharedPref.edit();
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+     //   getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         if(sharedPref.getAll().size() >0)
         {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    Log.i("ThresholdActivity", String.format("saved Instancestate not null :: %d :: ", sharedPref.getInt(MAX_TEMP, 0)));
+                 //   Log.i("ThresholdActivity", String.format("saved Instancestate not null :: %d :: ", sharedPref.getInt(MAX_TEMP, 0)));
                     TextView tempView = (TextView) findViewById(R.id.text_maxt);
                     tempView.setText(Integer.toString(sharedPref.getInt(MAX_TEMP, 0)));
 
@@ -134,6 +134,7 @@ public class ThresholdActivity extends AppCompatActivity {
         setMaxHumidityThresh(findViewById(R.id.text_maxh));
         setMinHumidityThresh(findViewById(R.id.text_minh));
         setCheckBoxThresh();
+      //  MainActivity.connectBoard();
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
 
@@ -144,7 +145,7 @@ public class ThresholdActivity extends AppCompatActivity {
         Log.i("ThresholdActivity", String.format("In the setMaxTempThresh"));
         TextView tempView = (TextView) findViewById(R.id.text_maxt);
         if(tempView.getText().toString().isEmpty() || tempView.getText().toString()== null ) {
-            maxTempThresh=0;
+            maxTempThresh=-1;
         }
         else {
             maxTempThresh= Integer.parseInt(tempView.getText().toString());
@@ -156,7 +157,7 @@ public class ThresholdActivity extends AppCompatActivity {
     {
         TextView tempView = (TextView) findViewById(R.id.text_mint);
         if(tempView.getText().toString().isEmpty() || tempView.getText().toString()== null ) {
-            minTempThresh=0;
+            minTempThresh=-1;
         }
         else {
             minTempThresh= Integer.parseInt(tempView.getText().toString());
@@ -169,7 +170,7 @@ public class ThresholdActivity extends AppCompatActivity {
     {
         TextView tempView = (TextView) findViewById(R.id.text_maxh);
         if(tempView.getText().toString().isEmpty() || tempView.getText().toString()== null ) {
-            maxHumidityThresh=0;
+            maxHumidityThresh=-1;
         }
         else {
             maxHumidityThresh= Integer.parseInt(tempView.getText().toString());
@@ -180,7 +181,7 @@ public class ThresholdActivity extends AppCompatActivity {
     public void setMinHumidityThresh(View view) {
         TextView tempView = (TextView) findViewById(R.id.text_minh);
         if (tempView.getText().toString().isEmpty() || tempView.getText().toString() == null) {
-            minHumidityThresh = 0;
+            minHumidityThresh = -1;
         } else {
             minHumidityThresh = Integer.parseInt(tempView.getText().toString());
         }
@@ -234,4 +235,5 @@ public class ThresholdActivity extends AppCompatActivity {
         Log.i("ThresholdActivity", String.format("In getThreshold ::%s::", input));
         return sharedPref.getInt(input, 0);
     }
+
 }
