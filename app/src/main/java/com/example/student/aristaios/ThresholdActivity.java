@@ -46,7 +46,7 @@ public class ThresholdActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         context = this;
-        sharedPref = context.getSharedPreferences(MYPREF,Context.MODE_PRIVATE);
+        sharedPref = context.getSharedPreferences(MYPREF, Context.MODE_PRIVATE);
         editor = sharedPref.edit();
 
      //   getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -233,7 +233,15 @@ public class ThresholdActivity extends AppCompatActivity {
     public static int getThreshold(String input)
     {
         Log.i("ThresholdActivity", String.format("In getThreshold ::%s::", input));
-        return sharedPref.getInt(input, 0);
+        int rval=-1;
+        try{
+            rval = sharedPref.getInt(input, 0);
+        } catch (NullPointerException e)
+        {
+            Log.i("ThresholdActivity", String.format("null pointer exception"));
+            rval =-1;
+        }
+        return rval;
     }
 
 }
