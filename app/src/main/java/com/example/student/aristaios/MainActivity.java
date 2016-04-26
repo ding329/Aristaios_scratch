@@ -267,7 +267,7 @@ Code below was 90% derived from temperatureTracker.java file from mbientlab labs
         switch(item.getItemId())
         {
             case R.id.action_settings:
-          //      disconnectBoard();
+                disconnectBoard();
                 Intent intent = new Intent(this, ThresholdActivity.class);
                 startActivity(intent);
                 return true;
