@@ -125,6 +125,28 @@
         android:layout_alignParentTop="true"
         android:paddingTop="16dp"
         android:orientation="vertical">
+        <RadioGroup
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            >
+
+        <RadioButton
+            android:id="@+id/radioC"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Celsius"
+            android:onClick="onTempConversionButtonClicked"
+            />
+        <RadioButton
+            android:id="@+id/radioF"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Fahrenheit"
+            android:onClick="onTempConversionButtonClicked"
+            />
+        </RadioGroup>
+        <!--
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -157,6 +179,7 @@
                 android:onClick="onRadioButtonClicked"
             />
         </RadioGroup>
+        /-->
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

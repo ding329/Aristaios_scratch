@@ -62,6 +62,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
     static final String BOOL_MINT = "checkbox_mint";
     static final String BOOL_MAXH = "checkbox_maxH";
     static final String BOOL_MINH = "checkbox_minH";
+    static final String TEMP_CONVERSION = "C_or_F";
 
 //removed the final
     private RouteManager.MessageHandler loggingMessageHandler = new RouteManager.MessageHandler()
@@ -74,14 +75,25 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
            Log.i("MainActivity", String.format("Ext thermistor: %.3fC", message.getData(Float.class)));
             if(mwBoard != null) {
                 getHumidity();
+                final int conversation = ThresholdActivity.getThreshold(TEMP_CONVERSION);
+                Log.i("MainActivity", String.format("conversation is %d", conversation));
                 final float tempVar = message.getData(Float.class);  //.intValue();
+                final float tempVarF =(message.getData(Float.class) * 18)/10 +32; //the required final made me do this the stupid way
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Log.i("MainActivity", String.format("Variables should change"));
+                  //      Log.i("MainActivity", String.format("Variables should change"));
                         TextView tempView = (TextView) findViewById(R.id.title_temp);
-                        tempView.setText(tempVar + "C");
-                        checkTemp(tempVar);
+                        if(conversation==1)
+                        {
+                            tempView.setText(tempVar + "C");
+                            checkTemp(tempVar);
+                        }
+                        else{
+                            tempView.setText(tempVarF + "F");
+                            Log.i("MainActivity", String.format("Ext thermistor: %.3fF", tempVarF));
+                            checkTemp(tempVarF);
+                        }
                         checkHumidity();
                         tempView = (TextView) findViewById(R.id.title_humidity);
                         tempView.setText(humidity + "%");

@@ -21,6 +21,7 @@ public class ThresholdActivity extends AppCompatActivity {
     static final String MAX_HUMIDITY = "text_maxh";
     static final String MIN_HUMIDITY = "text_minh";
     static final String BOOL_MAXT = "checkbox_maxt";
+    static final String TEMP_CONVERSION = "C_or_F";
     int maxHumidityThresh;
     int minHumidityThresh;
 
@@ -84,6 +85,21 @@ public class ThresholdActivity extends AppCompatActivity {
                         CheckBox checkbox  =(CheckBox) findViewById(R.id.checkbox_minh);
                         checkbox.setChecked(true);
                     }
+                    if(sharedPref.getInt(TEMP_CONVERSION,1)==1)
+                    {
+                        RadioButton radio = (RadioButton) findViewById(R.id.radioC);
+                        radio.setChecked(true);
+                    }
+                    else if(sharedPref.getInt(TEMP_CONVERSION,1)==2)
+                    {
+                        RadioButton radio = (RadioButton) findViewById(R.id.radioF);
+                        radio.setChecked(true);
+                    }
+                    else
+                    {
+                        RadioButton radio = (RadioButton) findViewById(R.id.radioC);
+                        radio.setChecked(true);
+                    }
                 }
             });
         }
@@ -91,6 +107,29 @@ public class ThresholdActivity extends AppCompatActivity {
     }
     //the values in the instance are destroyed on the back button.  Thi is our attempt to resolve it
 
+    public void onTempConversionButtonClicked(View view)
+    {
+        boolean checked = ((RadioButton) view).isChecked();
+        switch(view.getId())
+        {
+            case R.id.radioC:
+                if(checked)
+                {
+                    //TEMP_CONVERSION
+                    editor.putInt(TEMP_CONVERSION, 1);
+                    editor.commit();
+                    break;
+                }
+            case R.id.radioF:
+                if(checked)
+                {
+                    editor.putInt(TEMP_CONVERSION, 2);
+                    editor.commit();
+                    break;
+                }
+        }
+    }
+/*
     public void onRadioButtonClicked(View view)
     {
         boolean checked = ((RadioButton) view).isChecked();
@@ -120,7 +159,7 @@ public class ThresholdActivity extends AppCompatActivity {
                 }
         }
     }
-
+*/
     public int getSensorLocation()
     {
         return sensorLocation;
@@ -232,13 +271,13 @@ public class ThresholdActivity extends AppCompatActivity {
     }
     public static int getThreshold(String input)
     {
-        Log.i("ThresholdActivity", String.format("In getThreshold ::%s::", input));
+    //    Log.i("ThresholdActivity", String.format("In getThreshold ::%s::", input));
         int rval=-1;
         try{
             rval = sharedPref.getInt(input, 0);
         } catch (NullPointerException e)
         {
-            Log.i("ThresholdActivity", String.format("null pointer exception"));
+            Log.i("ThresholdActivity", String.format("null pointer exception::%s::", input));
             rval =-1;
         }
         return rval;
