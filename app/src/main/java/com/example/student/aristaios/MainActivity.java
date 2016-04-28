@@ -9,6 +9,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.format.Time;
 import android.util.Log;
 import android.view.MenuInflater;
 import android.view.View;
@@ -31,9 +32,14 @@ import com.mbientlab.metawear.module.MultiChannelTemperature.*;
 import com.mbientlab.metawear.module.Bme280Humidity;
 
 import com.mbientlab.metawear.module.Timer;
+import com.mbientlab.metawear.module.Settings;
+import com.mbientlab.metawear.module.Settings.BatteryState;
 
 import org.w3c.dom.Text;
 
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
+import java.nio.charset.Charset;
 import java.util.List;
 import java.util.TimerTask;
 //import java.util.Timer;
@@ -63,6 +69,8 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
     static final String BOOL_MAXH = "checkbox_maxH";
     static final String BOOL_MINH = "checkbox_minH";
     static final String TEMP_CONVERSION = "C_or_F";
+    Settings settingModule;
+  //  FileOutputStream outputStream;
 
 //removed the final
     private RouteManager.MessageHandler loggingMessageHandler = new RouteManager.MessageHandler()
@@ -79,6 +87,23 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                 Log.i("MainActivity", String.format("conversation is %d", conversation));
                 final float tempVar = message.getData(Float.class);  //.intValue();
                 final float tempVarF =(message.getData(Float.class) * 18)/10 +32; //the required final made me do this the stupid way
+
+                try {
+                    Time now = new Time();
+                    now.setToNow();
+                    String output = now.format("%d.%m.%Y %H.%M.%S") + " TEMP::" + tempVarF + " F::  Humidity::" + humidity + "%";
+                    Log.i("MainActivity", String.format("Output is now: %s", output));
+        /*            outputStream = openFileOutput("Aristaios.txt", Context.MODE_APPEND);
+                    outputStream.write(output.getBytes(Charset.forName("UTF-8")), 0, output.length());
+                    outputStream.close();
+        */
+                    OutputStreamWriter outputStreamWriter = new OutputStreamWriter(openFileOutput("Aristaios.txt", Context.MODE_APPEND));
+                    outputStreamWriter.write(output);
+                    outputStreamWriter.close();
+                } catch (Exception e) {
+                    Log.e("MainActivity", "File write failed:" + e.toString() );
+                }
+
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -240,6 +265,8 @@ Code below was 90% derived from temperatureTracker.java file from mbientlab labs
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+
+     //   getBattery();
 
     }
 
@@ -437,5 +464,31 @@ Code below was 90% derived from temperatureTracker.java file from mbientlab labs
         });
 
     }
+/*
+    public void getBattery()
+    {
+        try{
+            settingModule = mwBoard.getModule(Settings.class);
+        } catch (UnsupportedModuleException e){
+            Log.i("MainActivity", String.format("getBattery unsupported module"));
+            return;
+        }
 
+        settingModule.routeData().fromBattery().stream("battery_state").commit().onComplete(new AsyncOperation.CompletionHandler<Timer.Controller>()
+        {
+            @Override
+            public void success(RouteManager result)
+            {
+                result.subscribe("battery_state", new RouteManager.MessageHandler() {
+                    @Override
+                    public void process(Message message) {
+                        Log.i("MainActivity", "Battery state: " + message.getData(BatteryState.class));
+                    }
+                });
+            }
+        });
+        settingModule.readBatteryState();
+
+    }
+*/
 }
