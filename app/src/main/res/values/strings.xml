@@ -10,6 +10,7 @@
     <string name="radio_kitchen">Kitchen</string>
     <string name="temp_string">Undefined</string>
     <string name="humidity_string">Undefined</string>
+    <string name="menu_power"> </string>
     <!-- Strings related to Settings -->
 
     <!-- Example General settings -->

@@ -70,6 +70,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
     static final String BOOL_MINH = "checkbox_minH";
     static final String TEMP_CONVERSION = "C_or_F";
     Settings settingModule;
+    int varBattery=0;
   //  FileOutputStream outputStream;
 
 //removed the final
@@ -83,6 +84,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
            Log.i("MainActivity", String.format("Ext thermistor: %.3fC", message.getData(Float.class)));
             if(mwBoard != null) {
                 getHumidity();
+                getBattery();
                 final int conversation = ThresholdActivity.getThreshold(TEMP_CONVERSION);
                 Log.i("MainActivity", String.format("conversation is %d", conversation));
                 final float tempVar = message.getData(Float.class);  //.intValue();
@@ -115,13 +117,15 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                             checkTemp(tempVar);
                         }
                         else{
-                            tempView.setText(tempVarF + "F");
+                            tempView.setText(tempVarF + " F");
                             Log.i("MainActivity", String.format("Ext thermistor: %.3fF", tempVarF));
                             checkTemp(tempVarF);
                         }
                         checkHumidity();
                         tempView = (TextView) findViewById(R.id.title_humidity);
                         tempView.setText(humidity + "%");
+                        tempView = (TextView) findViewById(R.id.power);
+                        tempView.setText("Sensor Power: " + varBattery +"%");
                     }
                 });
             }
@@ -264,7 +268,6 @@ Code below was 90% derived from temperatureTracker.java file from mbientlab labs
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
 
      //   getBattery();
 
@@ -464,7 +467,7 @@ Code below was 90% derived from temperatureTracker.java file from mbientlab labs
         });
 
     }
-/*
+
     public void getBattery()
     {
         try{
@@ -474,7 +477,7 @@ Code below was 90% derived from temperatureTracker.java file from mbientlab labs
             return;
         }
 
-        settingModule.routeData().fromBattery().stream("battery_state").commit().onComplete(new AsyncOperation.CompletionHandler<Timer.Controller>()
+        settingModule.routeData().fromBattery().stream("battery_state").commit().onComplete(new AsyncOperation.CompletionHandler<RouteManager>()
         {
             @Override
             public void success(RouteManager result)
@@ -482,7 +485,8 @@ Code below was 90% derived from temperatureTracker.java file from mbientlab labs
                 result.subscribe("battery_state", new RouteManager.MessageHandler() {
                     @Override
                     public void process(Message message) {
-                        Log.i("MainActivity", "Battery state: " + message.getData(BatteryState.class));
+                        Log.i("MainActivity", "Battery state: " + message.getData(BatteryState.class).charge());
+                        varBattery = message.getData(BatteryState.class).charge();
                     }
                 });
             }
@@ -490,5 +494,5 @@ Code below was 90% derived from temperatureTracker.java file from mbientlab labs
         settingModule.readBatteryState();
 
     }
-*/
+
 }

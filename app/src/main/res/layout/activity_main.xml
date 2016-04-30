@@ -12,6 +12,8 @@
         android:layout_height="wrap_content"
         android:theme="@style/AppTheme.AppBarOverlay">
 
+
+
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
@@ -19,9 +21,19 @@
             android:background="?attr/colorPrimary"
             app:popupTheme="@style/AppTheme.PopupOverlay" />
 
+           <TextView
+               android:id="@+id/power"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:text="@string/menu_power"
+               android:textAlignment="center"
+               android:gravity="center_horizontal"
+           />
     </android.support.design.widget.AppBarLayout>
 
     <include layout="@layout/content_main" />
+
+
 <!--
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
