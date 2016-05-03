@@ -25,10 +25,6 @@ public class ThresholdActivity extends AppCompatActivity {
     int maxHumidityThresh;
     int minHumidityThresh;
 
-/*    Context context = this;
-    SharedPreferences sharedPref = context.getSharedPreferences(MYPREF,Context.MODE_PRIVATE);
-    SharedPreferences.Editor editor = sharedPref.edit();
-*/
     Context context;
 
     static final String BOOL_MINT = "checkbox_mint";
@@ -50,9 +46,10 @@ public class ThresholdActivity extends AppCompatActivity {
         sharedPref = context.getSharedPreferences(MYPREF, Context.MODE_PRIVATE);
         editor = sharedPref.edit();
 
-     //   getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        //if there are any values maintained in sharedPref
         if(sharedPref.getAll().size() >0)
         {
+            //update values on the screen
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -105,7 +102,7 @@ public class ThresholdActivity extends AppCompatActivity {
         }
 
     }
-    //the values in the instance are destroyed on the back button.  Thi is our attempt to resolve it
+    //the values in the instance are destroyed on the back button.  This is our attempt to resolve it
 
     public void onTempConversionButtonClicked(View view)
     {
@@ -165,6 +162,7 @@ public class ThresholdActivity extends AppCompatActivity {
         return sensorLocation;
     }
 
+    //go back to the main activity and store the current values
     public void backToMain(View view)
     {
         //ensure the values are stored

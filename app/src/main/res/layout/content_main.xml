@@ -22,6 +22,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:textAlignment="center"
+            android:textSize="96sp"
             android:text="@string/temp_string"
         />
 
@@ -29,9 +30,10 @@
             android:id="@+id/title_humidity"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:paddingTop="32dp"
             android:textAlignment="center"
             android:gravity="center_horizontal"
-
+            android:textSize="96sp"
             android:text="@string/humidity_string"
         />
     </LinearLayout>

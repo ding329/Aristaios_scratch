@@ -52,9 +52,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
     private MetaWearBoard mwBoard = null;
     private final String MW_MAC_ADDRESS= "D4:C6:12:E8:8A:12";
     private static final String TEMP_STREAM = "temp_nrf_stream";
-  //  private static final String HUMIDITY_STREAM ="humidity";
     private MetaWearBleService.LocalBinder serviceBinder;
-//    private Context baseContext = null;
     private CharSequence inputString = "";
     private MultiChannelTemperature mcTempModule;
     private final int TIME_DELAY_PERIOD = 60000;
@@ -71,9 +69,8 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
     static final String TEMP_CONVERSION = "C_or_F";
     Settings settingModule;
     int varBattery=0;
-  //  FileOutputStream outputStream;
 
-//removed the final
+
     private RouteManager.MessageHandler loggingMessageHandler = new RouteManager.MessageHandler()
     {
         @Override
@@ -95,13 +92,11 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                     now.setToNow();
                     String output = now.format("%d.%m.%Y %H.%M.%S") + " TEMP::" + tempVarF + " F::  Humidity::" + humidity + "%";
                     Log.i("MainActivity", String.format("Output is now: %s", output));
-        /*            outputStream = openFileOutput("Aristaios.txt", Context.MODE_APPEND);
-                    outputStream.write(output.getBytes(Charset.forName("UTF-8")), 0, output.length());
-                    outputStream.close();
-        */
-                    OutputStreamWriter outputStreamWriter = new OutputStreamWriter(openFileOutput("Aristaios.txt", Context.MODE_APPEND));
+
+   /*                 OutputStreamWriter outputStreamWriter = new OutputStreamWriter(openFileOutput("Aristaios.txt", Context.MODE_APPEND));
                     outputStreamWriter.write(output);
                     outputStreamWriter.close();
+   */
                 } catch (Exception e) {
                     Log.e("MainActivity", "File write failed:" + e.toString() );
                 }
@@ -113,7 +108,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                         TextView tempView = (TextView) findViewById(R.id.title_temp);
                         if(conversation==1)
                         {
-                            tempView.setText(tempVar + "C");
+                            tempView.setText(tempVar + " C");
                             checkTemp(tempVar);
                         }
                         else{
@@ -123,7 +118,8 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                         }
                         checkHumidity();
                         tempView = (TextView) findViewById(R.id.title_humidity);
-                        tempView.setText(humidity + "%");
+                        String rval = String.format("%.3f", humidity);
+                        tempView.setText(rval + "%");
                         tempView = (TextView) findViewById(R.id.power);
                         tempView.setText("Sensor Power: " + varBattery +"%");
                     }
@@ -135,13 +131,15 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
 
         }
     };
+
+    //if the temp values are not between the max and min values then send a pop up.
     public void checkTemp(float temp)
     {
      //   Log.i("MainActivity", String.format("inside checkTemp"));
         if(ThresholdActivity.getThreshold(BOOL_MAXT)==1)
         {
        //     Log.i("MainActivity", String.format("Inside BOOL_MAXT"));  //::%d::%s::", ThresholdActivity.getThreshold(MAX_TEMP),Integer.parseInt(tempView.getText().toString() )));
-            if(ThresholdActivity.getThreshold(MAX_TEMP) < temp )
+            if(ThresholdActivity.getThreshold(MAX_TEMP) < temp)
             {
        //         Log.i("MainActivity", String.format("alertbox attempt"));
                 new AlertDialog.Builder(MainActivity.this)
@@ -173,7 +171,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
             }
         }
     }
-    //do the temp
+    //if the humidity is not between the max and min in settings send a pop up box.
     public void checkHumidity()
     {
    //     Log.i("MainActivity", String.format("inside checkhumidity"));
@@ -210,7 +208,6 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                         })
                         .setIcon(android.R.drawable.ic_dialog_alert).show();
             }
-
         }
     }
 
@@ -261,15 +258,11 @@ Code below was 90% derived from temperatureTracker.java file from mbientlab labs
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //disconnectBoard();  //might help with coming back from settings
-
         getApplicationContext().bindService(new Intent(this, MetaWearBleService.class),
                 this, Context.BIND_AUTO_CREATE);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-     //   getBattery();
 
     }
 
@@ -309,7 +302,7 @@ Code below was 90% derived from temperatureTracker.java file from mbientlab labs
         switch(item.getItemId())
         {
             case R.id.action_settings:
-                disconnectBoard();
+                disconnectBoard();  //helps reconnect to the sensor when you come back to main
                 Intent intent = new Intent(this, ThresholdActivity.class);
                 startActivity(intent);
                 return true;
@@ -324,7 +317,7 @@ Code below was 90% derived from temperatureTracker.java file from mbientlab labs
         return super.onOptionsItemSelected(item);
 
     }
-
+//taken from https://mbientlab.com/androiddocs/latestmetawearboard.html
     public void retrieveBoard() {
         final BluetoothManager btManager=
                 (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
@@ -334,7 +327,7 @@ Code below was 90% derived from temperatureTracker.java file from mbientlab labs
         // Create a MetaWear board object for the Bluetooth Device
         mwBoard=  serviceBinder.getMetaWearBoard(remoteDevice);
     }
-
+//parts of this was taken from https://mbientlab.com/androiddocs/latest/metawearboard.html#connection-state
     private final MetaWearBoard.ConnectionStateHandler stateHandler= new MetaWearBoard.ConnectionStateHandler() {
         @Override
         public void connected()
@@ -346,7 +339,7 @@ Code below was 90% derived from temperatureTracker.java file from mbientlab labs
                     TextView tempView = (TextView) findViewById(R.id.title_temp);
                     tempView.setText("Connecting");
                     tempView = (TextView) findViewById(R.id.title_humidity);
-                    tempView.setText("Connecting");
+                    tempView.setText(" ");
                 }
             });
             getHumidity();
@@ -365,7 +358,7 @@ Code below was 90% derived from temperatureTracker.java file from mbientlab labs
                     TextView tempView = (TextView) findViewById(R.id.title_temp);
                     tempView.setText("Disconnected");
                     tempView = (TextView) findViewById(R.id.title_humidity);
-                    tempView.setText("Disconnected");
+                    tempView.setText(" ");
                 }
             });
         } //disconnected
@@ -401,7 +394,7 @@ Code below was 90% derived from temperatureTracker.java file from mbientlab labs
         }
 
     }
-
+// read in the temp
     public void getTemp()
     {
        try{
@@ -431,7 +424,7 @@ Code below was 90% derived from temperatureTracker.java file from mbientlab labs
         }
 
     }
-
+//read in the humidity values
     public void getHumidity()
     {
         try{
@@ -467,7 +460,7 @@ Code below was 90% derived from temperatureTracker.java file from mbientlab labs
         });
 
     }
-
+//get the battery charge left
     public void getBattery()
     {
         try{
